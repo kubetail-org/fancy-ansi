@@ -2,15 +2,17 @@
 
 Fancy-ANSI is a small JavaScript library designed to make rendering beautiful ANSI markup in the browser a breeze
 
-Demo: https://www.kubetail.com/demo
-Test: https://fancy-ansi.github.io
+<img src="https://github.com/kubetail-org/fancy-ansi/assets/75881/1e2fd08e-c1a7-4a98-b1d0-3e7eb664e476" width="250px">
+
+Demo: [https://www.kubetail.com/demo](https://www.kubetail.com/demo)  
+Preview: [https://fancy-ansi.github.io](https://fancy-ansi.github.io)
 
 ## Introduction
 
 While adding ANSI markup support to [kubetail](https://github.com/kubetail-org/kubetail) we tested out several popular popular ANSI-to-html conversion libraries (e.g. [ansi-html-community](https://github.com/mahdyar/ansi-html-community), [ansi-to-html](https://github.com/rburns/ansi-to-html), [ansi_up](https://github.com/drudru/ansi_up)) and ran into a few problems:
 
 * Failure to parse some of our users' ANSI markup
-* Lack of support for some of our users' ANSI SGR codes
+* Lack of support for some SGR codes
 * Use of hard-coded styles that made customization more difficult
 
 To solve these problems and make something that integrated nicely into our frontend stack (Tailwind, React) we created Fancy-ANSI. The library is designed to be small (~4 kb gzipped), performant, easy-to-use and safe from XSS attacks. It has the following features:
@@ -47,11 +49,11 @@ import { AnsiHtml } from 'fancy-ansi/react';
 
 export const ExampleComponent = () => {
   const text = '\x1b[34mhello \x1b[33mworld\x1b[0m';
-  return <AnsiHtml className="font-mono text-sm" text={text} />;
+  return <AnsiHtml className="font-mono whitespace-pre text-sm" text={text} />;
 };
 ```
 
-Or without React:
+Or with Vanilla-JS:
 
 ```typescript
 // example.ts
@@ -263,13 +265,13 @@ import { AnsiHtml } from 'fancy-ansi/react';
 
 export const ExampleComponent = () => {
   const text = '\x1b[34mhello \x1b[33mworld\x1b[0m';
-  return <AnsiHtml className="font-mono text-sm" text={text} />;
+  return <AnsiHtml className="font-mono whitespace-pre text-sm" text={text} />;
 };
 ```
 
 ## Examples
 
-You can see some example implementations in the `examples/` directory:
+You can see some example implementations in the [`examples/`](examples/) directory:
 
 * [Vite - React](examples/vite-react)
 * [Next.js](examples/nextjs)
@@ -284,7 +286,7 @@ cd fancy-ansi
 pnpm install
 ```
 
-To run the dev server, use the `dev` command:
+Next, run the dev server using the `dev` command:
 
 ```sh
 pnpm dev
