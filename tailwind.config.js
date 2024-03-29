@@ -2,7 +2,8 @@
 export default {
   darkMode: 'selector',
   content: [
-    './src/**/*.{ts,tsx}'
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
@@ -17,6 +18,7 @@ export default {
     },
   },
   plugins: [
-    require('fancy-ansi/plugin')
-  ]
+    require('fancy-ansi/plugin'),
+    require('@tailwindcss/forms')
+  ],
 }

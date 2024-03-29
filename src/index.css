@@ -1,0 +1,191 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: theme('colors.white');
+    --foreground: theme('colors.gray.900');
+  }
+
+  .dark {
+    --background: theme('colors.black');
+    --foreground: theme('colors.gray.50');
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  [data-ansi-theme="eclipse"] {
+    --ansi-black: theme(ansi.colors.eclipse.black);
+    --ansi-red: theme(ansi.colors.eclipse.red);
+    --ansi-green: theme(ansi.colors.eclipse.green);
+    --ansi-yellow: theme(ansi.colors.eclipse.yellow);
+    --ansi-blue: theme(ansi.colors.eclipse.blue);
+    --ansi-magenta: theme(ansi.colors.eclipse.magenta);
+    --ansi-cyan: theme(ansi.colors.eclipse.cyan);
+    --ansi-white: theme(ansi.colors.eclipse.white);
+    --ansi-bright-black: theme(ansi.colors.eclipse.bright-black);
+    --ansi-bright-red: theme(ansi.colors.eclipse.bright-red);
+    --ansi-bright-green: theme(ansi.colors.eclipse.bright-green);
+    --ansi-bright-yellow: theme(ansi.colors.eclipse.bright-yellow);
+    --ansi-bright-blue: theme(ansi.colors.eclipse.bright-blue);
+    --ansi-bright-magenta: theme(ansi.colors.eclipse.magenta);
+    --ansi-bright-cyan: theme(ansi.colors.eclipse.cyan);
+    --ansi-bright-white: theme(ansi.colors.eclipse.white);
+  }
+
+  [data-ansi-theme="putty"] {
+    --ansi-black: theme(ansi.colors.putty.black);
+    --ansi-red: theme(ansi.colors.putty.red);
+    --ansi-green: theme(ansi.colors.putty.green);
+    --ansi-yellow: theme(ansi.colors.putty.yellow);
+    --ansi-blue: theme(ansi.colors.putty.blue);
+    --ansi-magenta: theme(ansi.colors.putty.magenta);
+    --ansi-cyan: theme(ansi.colors.putty.cyan);
+    --ansi-white: theme(ansi.colors.putty.white);
+    --ansi-bright-black: theme(ansi.colors.putty.bright-black);
+    --ansi-bright-red: theme(ansi.colors.putty.bright-red);
+    --ansi-bright-green: theme(ansi.colors.putty.bright-green);
+    --ansi-bright-yellow: theme(ansi.colors.putty.bright-yellow);
+    --ansi-bright-blue: theme(ansi.colors.putty.bright-blue);
+    --ansi-bright-magenta: theme(ansi.colors.putty.magenta);
+    --ansi-bright-cyan: theme(ansi.colors.putty.cyan);
+    --ansi-bright-white: theme(ansi.colors.putty.white);
+  }
+
+  [data-ansi-theme="terminalapp"] {
+    --ansi-black: theme(ansi.colors.terminalapp.black);
+    --ansi-red: theme(ansi.colors.terminalapp.red);
+    --ansi-green: theme(ansi.colors.terminalapp.green);
+    --ansi-yellow: theme(ansi.colors.terminalapp.yellow);
+    --ansi-blue: theme(ansi.colors.terminalapp.blue);
+    --ansi-magenta: theme(ansi.colors.terminalapp.magenta);
+    --ansi-cyan: theme(ansi.colors.terminalapp.cyan);
+    --ansi-white: theme(ansi.colors.terminalapp.white);
+    --ansi-bright-black: theme(ansi.colors.terminalapp.bright-black);
+    --ansi-bright-red: theme(ansi.colors.terminalapp.bright-red);
+    --ansi-bright-green: theme(ansi.colors.terminalapp.bright-green);
+    --ansi-bright-yellow: theme(ansi.colors.terminalapp.bright-yellow);
+    --ansi-bright-blue: theme(ansi.colors.terminalapp.bright-blue);
+    --ansi-bright-magenta: theme(ansi.colors.terminalapp.magenta);
+    --ansi-bright-cyan: theme(ansi.colors.terminalapp.cyan);
+    --ansi-bright-white: theme(ansi.colors.terminalapp.white);
+
+  }
+
+  [data-ansi-theme="ubuntu"] {
+    --ansi-black: theme(ansi.colors.ubuntu.black);
+    --ansi-red: theme(ansi.colors.ubuntu.red);
+    --ansi-green: theme(ansi.colors.ubuntu.green);
+    --ansi-yellow: theme(ansi.colors.ubuntu.yellow);
+    --ansi-blue: theme(ansi.colors.ubuntu.blue);
+    --ansi-magenta: theme(ansi.colors.ubuntu.magenta);
+    --ansi-cyan: theme(ansi.colors.ubuntu.cyan);
+    --ansi-white: theme(ansi.colors.ubuntu.white);
+    --ansi-bright-black: theme(ansi.colors.ubuntu.bright-black);
+    --ansi-bright-red: theme(ansi.colors.ubuntu.bright-red);
+    --ansi-bright-green: theme(ansi.colors.ubuntu.bright-green);
+    --ansi-bright-yellow: theme(ansi.colors.ubuntu.bright-yellow);
+    --ansi-bright-blue: theme(ansi.colors.ubuntu.bright-blue);
+    --ansi-bright-magenta: theme(ansi.colors.ubuntu.magenta);
+    --ansi-bright-cyan: theme(ansi.colors.ubuntu.cyan);
+    --ansi-bright-white: theme(ansi.colors.ubuntu.white);
+  }
+
+  [data-ansi-theme="vga"] {
+    --ansi-black: theme(ansi.colors.vga.black);
+    --ansi-red: theme(ansi.colors.vga.red);
+    --ansi-green: theme(ansi.colors.vga.green);
+    --ansi-yellow: theme(ansi.colors.vga.yellow);
+    --ansi-blue: theme(ansi.colors.vga.blue);
+    --ansi-magenta: theme(ansi.colors.vga.magenta);
+    --ansi-cyan: theme(ansi.colors.vga.cyan);
+    --ansi-white: theme(ansi.colors.vga.white);
+    --ansi-bright-black: theme(ansi.colors.vga.bright-black);
+    --ansi-bright-red: theme(ansi.colors.vga.bright-red);
+    --ansi-bright-green: theme(ansi.colors.vga.bright-green);
+    --ansi-bright-yellow: theme(ansi.colors.vga.bright-yellow);
+    --ansi-bright-blue: theme(ansi.colors.vga.bright-blue);
+    --ansi-bright-magenta: theme(ansi.colors.vga.magenta);
+    --ansi-bright-cyan: theme(ansi.colors.vga.cyan);
+    --ansi-bright-white: theme(ansi.colors.vga.white);
+  }
+
+  [data-ansi-theme="vscode"] {
+    --ansi-black: theme(ansi.colors.vscode.black);
+    --ansi-red: theme(ansi.colors.vscode.red);
+    --ansi-green: theme(ansi.colors.vscode.green);
+    --ansi-yellow: theme(ansi.colors.vscode.yellow);
+    --ansi-blue: theme(ansi.colors.vscode.blue);
+    --ansi-magenta: theme(ansi.colors.vscode.magenta);
+    --ansi-cyan: theme(ansi.colors.vscode.cyan);
+    --ansi-white: theme(ansi.colors.vscode.white);
+    --ansi-bright-black: theme(ansi.colors.vscode.bright-black);
+    --ansi-bright-red: theme(ansi.colors.vscode.bright-red);
+    --ansi-bright-green: theme(ansi.colors.vscode.bright-green);
+    --ansi-bright-yellow: theme(ansi.colors.vscode.bright-yellow);
+    --ansi-bright-blue: theme(ansi.colors.vscode.bright-blue);
+    --ansi-bright-magenta: theme(ansi.colors.vscode.magenta);
+    --ansi-bright-cyan: theme(ansi.colors.vscode.cyan);
+    --ansi-bright-white: theme(ansi.colors.vscode.white);
+  }
+
+  [data-ansi-theme="windows10"] {
+    --ansi-black: theme(ansi.colors.windows10.black);
+    --ansi-red: theme(ansi.colors.windows10.red);
+    --ansi-green: theme(ansi.colors.windows10.green);
+    --ansi-yellow: theme(ansi.colors.windows10.yellow);
+    --ansi-blue: theme(ansi.colors.windows10.blue);
+    --ansi-magenta: theme(ansi.colors.windows10.magenta);
+    --ansi-cyan: theme(ansi.colors.windows10.cyan);
+    --ansi-white: theme(ansi.colors.windows10.white);
+    --ansi-bright-black: theme(ansi.colors.windows10.bright-black);
+    --ansi-bright-red: theme(ansi.colors.windows10.bright-red);
+    --ansi-bright-green: theme(ansi.colors.windows10.bright-green);
+    --ansi-bright-yellow: theme(ansi.colors.windows10.bright-yellow);
+    --ansi-bright-blue: theme(ansi.colors.windows10.bright-blue);
+    --ansi-bright-magenta: theme(ansi.colors.windows10.magenta);
+    --ansi-bright-cyan: theme(ansi.colors.windows10.cyan);
+    --ansi-bright-white: theme(ansi.colors.windows10.white);
+  }
+
+  [data-ansi-theme="xterm"] {
+    --ansi-black: theme(ansi.colors.xterm.black);
+    --ansi-red: theme(ansi.colors.xterm.red);
+    --ansi-green: theme(ansi.colors.xterm.green);
+    --ansi-yellow: theme(ansi.colors.xterm.yellow);
+    --ansi-blue: theme(ansi.colors.xterm.blue);
+    --ansi-magenta: theme(ansi.colors.xterm.magenta);
+    --ansi-cyan: theme(ansi.colors.xterm.cyan);
+    --ansi-white: theme(ansi.colors.xterm.white);
+    --ansi-bright-black: theme(ansi.colors.xterm.bright-black);
+    --ansi-bright-red: theme(ansi.colors.xterm.bright-red);
+    --ansi-bright-green: theme(ansi.colors.xterm.bright-green);
+    --ansi-bright-yellow: theme(ansi.colors.xterm.bright-yellow);
+    --ansi-bright-blue: theme(ansi.colors.xterm.bright-blue);
+    --ansi-bright-magenta: theme(ansi.colors.xterm.magenta);
+    --ansi-bright-cyan: theme(ansi.colors.xterm.cyan);
+    --ansi-bright-white: theme(ansi.colors.xterm.white);
+  }
+
+  [data-ansi-theme="xtermjs"] {
+    --ansi-black: theme(ansi.colors.xtermjs.black);
+    --ansi-red: theme(ansi.colors.xtermjs.red);
+    --ansi-green: theme(ansi.colors.xtermjs.green);
+    --ansi-yellow: theme(ansi.colors.xtermjs.yellow);
+    --ansi-blue: theme(ansi.colors.xtermjs.blue);
+    --ansi-magenta: theme(ansi.colors.xtermjs.magenta);
+    --ansi-cyan: theme(ansi.colors.xtermjs.cyan);
+    --ansi-white: theme(ansi.colors.xtermjs.white);
+    --ansi-bright-black: theme(ansi.colors.xtermjs.bright-black);
+    --ansi-bright-red: theme(ansi.colors.xtermjs.bright-red);
+    --ansi-bright-green: theme(ansi.colors.xtermjs.bright-green);
+    --ansi-bright-yellow: theme(ansi.colors.xtermjs.bright-yellow);
+    --ansi-bright-blue: theme(ansi.colors.xtermjs.bright-blue);
+    --ansi-bright-magenta: theme(ansi.colors.xtermjs.magenta);
+    --ansi-bright-cyan: theme(ansi.colors.xtermjs.cyan);
+    --ansi-bright-white: theme(ansi.colors.xtermjs.white);
+  }
+}
