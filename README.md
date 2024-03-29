@@ -281,80 +281,78 @@ You can see some example implementations in the [`examples/`](examples/) directo
 ### FancyAnsi - The converter class
 
 ```
-# FancyAnsi class
+FancyAnsi
 
-The `FancyAnsi` class represents an ANSI to HTML converter instance.
+  toHtml(input)
+    * @param {string} input - The input string
+    * @returns {string} Browser-safe HTML string containing stylized ANSI content
 
-## Example
+Example:
 
-import { FancyAnsi } from 'fancy-ansi';
+  import { FancyAnsi } from 'fancy-ansi';
 
-const fancyAnsi = new FancyAnsi();
-fancyAnsi.toHtml('\x1b[1mThis is in bold.\x1b[0m');
-
-## Methods
-
-* toHtml(input: string): string - Returns browser-safe string with ANSI HTML markup 
+  const fancyAnsi = new FancyAnsi();
+  fancyAnsi.toHtml('\x1b[1mThis is in bold.\x1b[0m');
 ```
 
 ### hasAnsi() - Check if a string has ANSI markup
 
 ```
-# hasAnsi() method
+hasAnsi(input)
 
-Returns boolean indicating whether or not input string contains ANSI markup.
+  * @param {string} input - The input string
+  * @returns {boolean} Boolean indicating whether or not input string contains ANSI markup
 
-## Example
+Example:
 
-import { hasAnsi } from 'fancy-ansi';
+  import { hasAnsi } from 'fancy-ansi';
 
-if (hasAnsi('\x1b[1mThis is in bold.\x1b[0m')) {
-  console.log('string has ansi');
-} else {
-  console.log('string doesn\'t have ansi');
-}
+  if (hasAnsi('\x1b[1mThis is in bold.\x1b[0m')) {
+    console.log('string has ansi');
+  } else {
+    console.log('string doesn\'t have ansi');
+  }
 ```
 
 ### stripAnsi() - Remove ANSI markup
 
 ```
-# stripAnsi() method
+stripAnsi(input)
 
-Removes ANSI markup from input strings.
+  * @param {string} input - The input string
+  * @returns {string} Content of input string with ANSI markup removed
 
-## Example
+Example:
 
-import { stripAnsi } from 'fancy-ansi';
+  import { stripAnsi } from 'fancy-ansi';
 
-const withoutAnsi = stripAnsi('\x1b[1mThis is in bold.\x1b[0m');
-console.log(`string without ansi: ${withoutAnsi}`);
+  const withoutAnsi = stripAnsi('\x1b[1mThis is in bold.\x1b[0m');
+  console.log(`string without ansi: ${withoutAnsi}`);
 ```
 
 ### colors - Built-in palettes
 
 ```
-# colors module
+`fancy-ansi/colors` module
 
-JavaScript module containing built-in color palettes.
+Example:
 
-## Example
+  import { xtermjs, terminalapp } from 'fancy-ansi/colors';
 
-import { xtermjs, terminalapp } from 'fancy-ansi/colors';
+  console.log(`xterm.js red: ${xtermjs.red}`);
+  console.log('Terminal.app red: ${terminalapp.red}`);
 
-console.log(`xterm.js red: ${xtermjs.red}`);
-console.log('Terminal.app red: ${terminalapp.red}`);
+Available palettes:
 
-## Available palettes
-
-* eclipse
-* putty
-* terminalapp
-* ubuntu
-* vga
-* vscode
-* windows10
-* xterm
-* xtermjs
+  * eclipse
+  * putty
+  * terminalapp
+  * ubuntu
+  * vga
+  * vscode
+  * windows10
+  * xterm
+  * xtermjs
 ```
 
 ## Development
