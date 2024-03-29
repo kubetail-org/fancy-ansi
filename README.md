@@ -2,7 +2,7 @@
 
 Fancy-ANSI is a small JavaScript library for rendering beautiful ANSI markup in the browser
 
-![fancy-ansi-ascii](https://github.com/kubetail-org/fancy-ansi/assets/75881/90f48f06-c2fa-442a-aab5-43abfb17968e)
+<img width="552" alt="fancy-ansi-ascii" src="https://github.com/kubetail-org/fancy-ansi/assets/75881/7262e33c-44af-4a20-94d0-ab3babe97b60">
 
 Demo: [https://www.kubetail.com/demo](https://www.kubetail.com/demo)  
 Preview: [https://kubetail-org.github.io/fancy-ansi/](https://kubetail-org.github.io/fancy-ansi/)
