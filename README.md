@@ -401,5 +401,4 @@ The production files will be located in the `dist/` directory.
 
 * The ANSI parsing code is from [ansi_up](https://github.com/drudru/ansi_up)
 * has/strip methods use [Chalk's](https://github.com/chalk/chalk) [ansi-regex](https://github.com/chalk/ansi-regex)
-* Icon based on <a href="https://www.flaticon.com/free-icons/coding" title="coding icons">coding icon created by juicy_fish - Flaticon</a>
 * [Fancy Nancy](https://www.fancynancyworld.com)
