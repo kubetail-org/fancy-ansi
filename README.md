@@ -19,7 +19,7 @@ To solve these problems and make something that integrated nicely into our front
 
 * Supports easy customization using CSS variables
 * Supports almost all SGR codes
-* Includes a Tailwind plugin that enables support for theming easily
+* Includes a Tailwind plugin that enables support for easy theming
 * Includes a React component for easy use in a React environment
 * Includes useful utilities like `hasAnsi()` and `stripAnsi()` that come in handy when working with ANSI
 * Includes popular color palettes that can be swapped in easily
@@ -340,7 +340,7 @@ Example:
   import { xtermjs, terminalapp } from 'fancy-ansi/colors';
 
   console.log(`xterm.js red: ${xtermjs.red}`);
-  console.log('Terminal.app red: ${terminalapp.red}`);
+  console.log(`Terminal.app red: ${terminalapp.red}`);
 
 Available palettes:
 
