@@ -5,7 +5,7 @@ Fancy-ANSI is a small JavaScript library designed to help developers render beau
 <img src="https://github.com/kubetail-org/fancy-ansi/assets/75881/1e2fd08e-c1a7-4a98-b1d0-3e7eb664e476" width="250px">
 
 Demo: [https://www.kubetail.com/demo](https://www.kubetail.com/demo)  
-Preview: [https://fancy-ansi.github.io](https://fancy-ansi.github.io)
+Preview: [https://kubetail-org.github.io/fancy-ansi/](https://kubetail-org.github.io/fancy-ansi/)
 
 ## Introduction
 
