@@ -14,6 +14,7 @@ While adding ANSI markup support to [kubetail](https://github.com/kubetail-org/k
 * Failure to parse some of our users' ANSI markup
 * Lack of support for some SGR codes
 * Use of hard-coded styles that made customization more difficult
+* Lack of support for CSS variables
 
 To solve these problems and make something that integrated nicely into our frontend stack (Tailwind, React) we created Fancy-ANSI. The library is designed to be small (~4 kb gzipped), performant, easy-to-use and safe from XSS attacks. It has the following features:
 
