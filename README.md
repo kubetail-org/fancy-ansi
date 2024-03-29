@@ -276,9 +276,92 @@ You can see some example implementations in the [`examples/`](examples/) directo
 * [Vite - React](examples/vite-react)
 * [Next.js](examples/nextjs)
 
+## API
+
+### FancyAnsi - The converter class
+
+```
+# FancyAnsi class
+
+The `FancyAnsi` class represents an ANSI to HTML converter instance.
+
+## Example
+
+import { FancyAnsi } from 'fancy-ansi';
+
+const fancyAnsi = new FancyAnsi();
+fancyAnsi.toHtml('\x1b[1mThis is in bold.\x1b[0m');
+
+## Methods
+
+* toHtml(input: string): string - Returns browser-safe string with ANSI HTML markup 
+```
+
+### hasAnsi() - Check if a string has ANSI markup
+
+```
+# hasAnsi() method
+
+Returns boolean indicating whether or not input string contains ANSI markup.
+
+## Example
+
+import { hasAnsi } from 'fancy-ansi';
+
+if (hasAnsi('\x1b[1mThis is in bold.\x1b[0m')) {
+  console.log('string has ansi');
+} else {
+  console.log('string doesn\'t have ansi');
+}
+```
+
+### stripAnsi() - Remove ANSI markup
+
+```
+# stripAnsi() method
+
+Removes ANSI markup from input strings.
+
+## Example
+
+import { stripAnsi } from 'fancy-ansi';
+
+const withoutAnsi = stripAnsi('\x1b[1mThis is in bold.\x1b[0m');
+console.log(`string without ansi: ${withoutAnsi}`);
+```
+
+### colors - Built-in palettes
+
+```
+# colors module
+
+JavaScript module containing built-in color palettes.
+
+## Example
+
+import { xtermjs, terminalapp } from 'fancy-ansi/colors';
+
+console.log(`xterm.js red: ${xtermjs.red}`);
+console.log('Terminal.app red: ${terminalapp.red}`);
+
+## Available palettes
+
+* eclipse
+* putty
+* terminalapp
+* ubuntu
+* vga
+* vscode
+* windows10
+* xterm
+* xtermjs
+```
+
 ## Development
 
-Fancy-ANSI uses vite for development. To develop Fancy-ANSI, first clone the repository then install the dependencies:
+### Get the code
+
+To develop Fancy-ANSI, first clone the repository then install the dependencies:
 
 ```sh
 git clone git@github.com:kubetail-org/fancy-ansi.git
@@ -286,17 +369,19 @@ cd fancy-ansi
 pnpm install
 ```
 
-Next, run the dev server using the `dev` command:
+### Run the dev server
+
+Fancy-ANSI uses vite for development. To run run the vite dev server, use the `dev` command:
 
 ```sh
 pnpm dev
 ```
 
-Now you can access the dev demo page and see your changes at [http://localhost:5173/](http://localhost:5173/).
+Now you can access the demo page and see your changes at [http://localhost:5173/](http://localhost:5173/).
 
-## Testing
+### Run the unit tests
 
-Fancy-ANSI uses jest for testing (via vitest). To run the tests us the `test` command:
+Fancy-ANSI uses jest for testing (via vitest). To run the tests, use the `test` command:
 
 ```sh
 pnpm test
@@ -304,9 +389,9 @@ pnpm test
 
 The test files are colocated with the source code in the `src/` directory, with the filename format `{name}.test.(ts|tsx)`.
 
-## Build
+### Build for production
 
-To build Fancy-ANSI for production run the `build` command:
+To build Fancy-ANSI for production, run the `build` command:
 
 ```sh
 pnpm build
