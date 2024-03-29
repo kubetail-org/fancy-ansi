@@ -1,0 +1,41 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`AnsiHtml > passes through className 1`] = `
+<DocumentFragment>
+  <span
+    class="my-custom-class"
+  >
+    <span
+      style="font-weight:var(--ansi-bold-font-weight, 600);"
+    >
+      bold
+    </span>
+  </span>
+</DocumentFragment>
+`;
+
+exports[`AnsiHtml > passes through style 1`] = `
+<DocumentFragment>
+  <span
+    style="white-space: no-wrap;"
+  >
+    <span
+      style="font-weight:var(--ansi-bold-font-weight, 600);"
+    >
+      bold
+    </span>
+  </span>
+</DocumentFragment>
+`;
+
+exports[`AnsiHtml > renders properly 1`] = `
+<DocumentFragment>
+  <span>
+    <span
+      style="font-weight:var(--ansi-bold-font-weight, 600);"
+    >
+      bold
+    </span>
+  </span>
+</DocumentFragment>
+`;
