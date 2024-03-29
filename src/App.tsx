@@ -1,8 +1,6 @@
 import { useState } from 'react'
 import { AnsiHtml } from 'fancy-ansi/react';
 
-import fancyAnsiLogo from '/fancy-ansi.svg'
-
 const sgrParameters: [number, string, string?][] = [
   [0, 'Reset'],
   [1, 'Bold'],
@@ -144,7 +142,36 @@ const ExtendedColorsTable = () => (
   </>
 );
 
+const FancyAnsiAscii = () => {
+  const l1 = `\x1b[31m _____                              _    _   _ ____ ___ \x1b[0m`;
+  const l2 = `\x1b[33m|  ___|_ _ _ __   ___ _   _        / \\  | \\ | / ___|_ _|\x1b[0m`;
+  const l3 = `\x1b[32m| |_ / _\` | '_ \\ / __| | | |_____ / _ \\ |  \\| \\___ \\| | \x1b[0m`;
+  const l4 = `\x1b[34m|  _| (_| | | | | (__| |_| |_____/ ___ \\| |\\  |___) | | \x1b[0m`;
+  const l5 = `\x1b[35m|_|  \\__,_|_| |_|\\___|\\__, |    /_/   \\_\\_| \\_|____/___|\x1b[0m`;
+  const l6 = `\x1b[36m                      |___/                             \x1b[0m`;
+
+  return (
+    <div className="whitespace-pre font-mono font-size-[10px] leading-[20px]">
+      <AnsiHtml className="block" text={l1} />
+      <AnsiHtml className="block" text={l2} />
+      <AnsiHtml className="block" text={l3} />
+      <AnsiHtml className="block" text={l4} />
+      <AnsiHtml className="block" text={l5} />
+      <AnsiHtml className="block" text={l6} />
+    </div>
+  );
+};
+
 const Header = () => {
+  return (
+    <div className="flex justify-between">
+      <FancyAnsiAscii />
+      <a className="text-blue-500 underline" href="https://github.com/kubetail-org/fancy-ansi.git">GitHub</a>
+    </div>
+  );
+}
+
+const Footer = () => {
   const handleAppearanceChange = (ev: React.ChangeEvent<HTMLSelectElement>) => {
     if (ev.target.value === 'dark') document.documentElement.classList.add('dark');
     else document.documentElement.classList.remove('dark');
@@ -155,50 +182,39 @@ const Header = () => {
   };
 
   return (
-    <div className="flex justify-between">
-      <div className="flex space-x-3 whitespace-nowrap">
-        <a href="https://github.com/kubetail-org/fancy-ansi">
-          <img className="h-[60px] min-h-[60px]" src={fancyAnsiLogo} alt="Fancy-ANSI" />
-        </a>
-        <span className="text-4xl">Fancy-ANSI</span>
+    <div className="flex space-x-3">
+      <div>
+        <label className="mr-1">Appearance:</label>
+        <select
+          className="bg-background text-sm py-1"
+          defaultValue="light"
+          onChange={handleAppearanceChange}
+        >
+          <option value="light">Light mode</option>
+          <option value="dark">Dark mode</option>
+        </select>
       </div>
       <div>
-        <div className="flex space-x-5">
-          <div>
-            <label className="mr-1">Appearance:</label>
-            <select
-              className="bg-background"
-              defaultValue="light"
-              onChange={handleAppearanceChange}
-            >
-              <option value="light">Light mode</option>
-              <option value="dark">Dark mode</option>
-            </select>
-          </div>
-          <div>
-            <label className="mr-1">ANSI Palette:</label>
-            <select
-              className="bg-background"
-              defaultValue="light"
-              onChange={handleAnsiChange}
-            >
-              <option value="xtermjs">Xterm.js (default)</option>
-              <option value="eclipse">Eclipse</option>
-              <option value="putty">Putty</option>
-              <option value="terminalapp">Terminal.app</option>
-              <option value="ubuntu">Ubuntu</option>
-              <option value="vga">VGA</option>
-              <option value="vscode">Visual Studio Code</option>
-              <option value="windows10">Windows 10</option>
-              <option value="xterm">Xterm</option>
-            </select>
-          </div>
-        </div>
+        <label className="mr-1">ANSI Palette:</label>
+        <select
+          className="bg-background text-sm py-1"
+          defaultValue="light"
+          onChange={handleAnsiChange}
+        >
+          <option value="xtermjs">Xterm.js (default)</option>
+          <option value="eclipse">Eclipse</option>
+          <option value="putty">Putty</option>
+          <option value="terminalapp">Terminal.app</option>
+          <option value="ubuntu">Ubuntu</option>
+          <option value="vga">VGA</option>
+          <option value="vscode">Visual Studio Code</option>
+          <option value="windows10">Windows 10</option>
+          <option value="xterm">Xterm</option>
+        </select>
       </div>
     </div>
-
   );
-}
+};
 
 function App() {
   const [testStr, setTestStr] = useState<string>();
@@ -208,23 +224,28 @@ function App() {
   };
 
   return (
-    <div className="p-2">
-      <Header />
-      <hr className="my-5" />
-      <div>
-        <div><label>Test:</label></div>
-        <input
-          className="h-[30px] w-[800px] border border-input bg-background"
-          onChange={handleTestChange}
-        />
-        <div className="h-[30px] leading-[30px] mb-5">
-          <AnsiHtml text={testStr} />
+    <div>
+      <div className="p-2">
+        <Header />
+        <hr className="my-5" />
+        <div>
+          <div><label>Test:</label></div>
+          <input
+            className="h-[30px] w-[550px] border border-input bg-background"
+            onChange={handleTestChange}
+          />
+          <div className="h-[30px] leading-[30px] mb-5">
+            <AnsiHtml text={testStr} />
+          </div>
         </div>
+        <hr className="my-5" />
+        <SGRCodeTable />
+        <hr className="my-5" />
+        <ExtendedColorsTable />
       </div>
-      <hr className="my-5" />
-      <SGRCodeTable />
-      <hr className="my-5" />
-      <ExtendedColorsTable />
+      <div className="sticky bottom-0 bg-background p-2 border-t">
+        <Footer />
+      </div>
     </div>
   )
 }
