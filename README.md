@@ -202,7 +202,7 @@ The Fancy-ANSI Tailwind plugin makes it easy to support theming and to access mu
 module.exports = {
   plugins: [
     // ...
-    require('fancy-ansi/twplugin')
+    require('fancy-ansi/plugin')
   ]
 }
 ```
