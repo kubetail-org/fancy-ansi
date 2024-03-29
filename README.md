@@ -12,7 +12,6 @@ Preview: [https://kubetail-org.github.io/fancy-ansi/](https://kubetail-org.githu
 While adding ANSI markup support to [kubetail](https://github.com/kubetail-org/kubetail) we tested out several popular popular ANSI-to-html conversion libraries (e.g. [ansi-html-community](https://github.com/mahdyar/ansi-html-community), [ansi-to-html](https://github.com/rburns/ansi-to-html), [ansi_up](https://github.com/drudru/ansi_up)) and ran into a few problems:
 
 * Failure to parse some of our users' ANSI markup
-* Lack of support for some SGR codes
 * Use of hard-coded styles that made customization more difficult
 * Lack of support for CSS variables
 
