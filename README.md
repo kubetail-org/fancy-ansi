@@ -195,7 +195,7 @@ Extended colors:
 
 ### Tailwind
 
-The Fancy-ANSI Tailwind plugin makes it easy to support theming and to access multiple built-in palettes in your css. To use the plugin, add it to your `tailwind.config.js` file:
+The Fancy-ANSI Tailwind plugin makes it easy to support theming and to access multiple built-in palettes from your css. To use the plugin, add it to your `tailwind.config.js` file:
 
 ```js
 // tailwind.config.js
@@ -257,7 +257,7 @@ Now you can access the built-in palettes using the Tailwind `theme()` function. 
 
 ### React
 
-Fancy-ANSI has a convenient React component that you can import from the `fancy-ancy/react` module:
+Fancy-ANSI has a convenient React component that you can import from the `fancy-ansi/react` module:
 
 ```jsx
 // ExampleComponent.jsx
