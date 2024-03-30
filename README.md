@@ -1,6 +1,6 @@
 # Fancy-ANSI
 
-Fancy-ANSI is a small JavaScript library for rendering beautiful ANSI markup in the browser
+Fancy-ANSI is a small JavaScript library for converting ANSI to beautiful, browser-safe HTML
 
 <img width="552" alt="fancy-ansi-ascii" src="https://github.com/kubetail-org/fancy-ansi/assets/75881/7262e33c-44af-4a20-94d0-ab3babe97b60">
 
