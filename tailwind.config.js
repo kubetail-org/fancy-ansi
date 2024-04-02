@@ -2,8 +2,9 @@
 export default {
   darkMode: 'selector',
   content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
+    './index.html',
+    './src/**/*.{js,ts,jsx,tsx}',
+    './node_modules/@kubetail/ui/**/*.js'
   ],
   theme: {
     extend: {
@@ -18,7 +19,7 @@ export default {
     },
   },
   plugins: [
-    require('fancy-ansi/plugin'),
-    require('@tailwindcss/forms')
+    require('@kubetail/ui/plugin'),
+    require('fancy-ansi/plugin')
   ],
 }

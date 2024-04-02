@@ -1,5 +1,7 @@
 import { useState } from 'react'
+
 import { AnsiHtml } from 'fancy-ansi/react';
+import Form from '@kubetail/ui/elements/Form';
 
 const sgrParameters: [number, string, string?][] = [
   [0, 'Reset'],
@@ -151,7 +153,7 @@ const FancyAnsiAscii = () => {
   const l6 = `\x1b[36m                      |___/                             \x1b[0m`;
 
   return (
-    <div className="whitespace-pre font-mono font-size-[10px] leading-[20px]">
+    <div className="whitespace-pre font-mono text-xs leading-[14px] md:text-base md:leading-[18px] ">
       <AnsiHtml className="block" text={l1} />
       <AnsiHtml className="block" text={l2} />
       <AnsiHtml className="block" text={l3} />
@@ -164,7 +166,7 @@ const FancyAnsiAscii = () => {
 
 const Header = () => {
   return (
-    <div className="flex justify-between">
+    <div className="md:flex md:justify-between">
       <FancyAnsiAscii />
       <a className="text-blue-500 underline" href="https://github.com/kubetail-org/fancy-ansi.git">GitHub</a>
     </div>
@@ -183,34 +185,34 @@ const Footer = () => {
 
   return (
     <div className="flex space-x-3">
-      <div>
-        <label className="mr-1">Appearance:</label>
-        <select
+      <div className="flex items-center space-x-1">
+        <label>Appearance:</label>
+        <Form.Select
           className="bg-background text-sm py-1"
           defaultValue="light"
           onChange={handleAppearanceChange}
         >
-          <option value="light">Light mode</option>
-          <option value="dark">Dark mode</option>
-        </select>
+          <Form.Option value="light">Light mode</Form.Option>
+          <Form.Option value="dark">Dark mode</Form.Option>
+        </Form.Select>
       </div>
-      <div>
-        <label className="mr-1">ANSI Palette:</label>
-        <select
+      <div className="flex items-center space-x-1">
+        <label className="whitespace-nowrap">ANSI Palette:</label>
+        <Form.Select
           className="bg-background text-sm py-1"
           defaultValue="light"
           onChange={handleAnsiChange}
         >
-          <option value="xtermjs">Xterm.js (default)</option>
-          <option value="eclipse">Eclipse</option>
-          <option value="putty">Putty</option>
-          <option value="terminalapp">Terminal.app</option>
-          <option value="ubuntu">Ubuntu</option>
-          <option value="vga">VGA</option>
-          <option value="vscode">Visual Studio Code</option>
-          <option value="windows10">Windows 10</option>
-          <option value="xterm">Xterm</option>
-        </select>
+          <Form.Option value="xtermjs">Xterm.js (default)</Form.Option>
+          <Form.Option value="eclipse">Eclipse</Form.Option>
+          <Form.Option value="putty">Putty</Form.Option>
+          <Form.Option value="terminalapp">Terminal.app</Form.Option>
+          <Form.Option value="ubuntu">Ubuntu</Form.Option>
+          <Form.Option value="vga">VGA</Form.Option>
+          <Form.Option value="vscode">Visual Studio Code</Form.Option>
+          <Form.Option value="windows10">Windows 10</Form.Option>
+          <Form.Option value="xterm">Xterm</Form.Option>
+        </Form.Select>
       </div>
     </div>
   );
@@ -230,8 +232,7 @@ function App() {
         <hr className="my-5" />
         <div>
           <div><label>Test:</label></div>
-          <input
-            className="h-[30px] w-[550px] border border-input bg-background"
+          <Form.Control
             onChange={handleTestChange}
           />
           <div className="h-[30px] leading-[30px] mb-5">
