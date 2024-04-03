@@ -27,25 +27,25 @@ const sgrParameters: [number, string, string?][] = [
   [24, 'Underline off', '\x1b[4mOn\x1b[24m Off\x1b[0m'],
   [28, 'Hidden off', '|\x1b[8mOn\x1b[28m| |Off|\x1b[0m'],
   [29, 'Strikethrough off', '\x1b[9mOn\x1b[29m Off\x1b[0m'],
-  [30, 'Foreground color - black'],
-  [31, 'Foreground color - red'],
-  [32, 'Foreground color - green'],
-  [33, 'Foreground color - yellow'],
-  [34, 'Foreground color - blue'],
-  [35, 'Foreground color - magenta'],
-  [36, 'Foreground color - cyan'],
-  [37, 'Foreground color - white'],
-  [38, 'Foreground color - extended (see below)'],
+  [30, 'Foreground - black'],
+  [31, 'Foreground - red'],
+  [32, 'Foreground - green'],
+  [33, 'Foreground - yellow'],
+  [34, 'Foreground - blue'],
+  [35, 'Foreground - magenta'],
+  [36, 'Foreground - cyan'],
+  [37, 'Foreground - white'],
+  [38, 'Foreground - extended (see below)'],
   [39, 'Default foreground color', '\x1b[31mOn\x1b[39m Off\x1b[0m'],
-  [40, 'Background color - black'],
-  [41, 'Background color - red'],
-  [42, 'Background color - green'],
-  [43, 'Background color - yellow'],
-  [44, 'Background color - blue'],
-  [45, 'Background color - magenta'],
-  [46, 'Background color - cyan'],
-  [47, 'Background color - white'],
-  [48, 'Background color - extended (see below)'],
+  [40, 'Background - black'],
+  [41, 'Background - red'],
+  [42, 'Background - green'],
+  [43, 'Background - yellow'],
+  [44, 'Background - blue'],
+  [45, 'Background - magenta'],
+  [46, 'Background - cyan'],
+  [47, 'Background - white'],
+  [48, 'Background - extended (see below)'],
   [49, 'Default background color', '\x1b[41mOn\x1b[49m Off\x1b[0m'],
   [51, 'Frame'],
   [53, 'Overline'],
@@ -56,31 +56,31 @@ const sgrParameters: [number, string, string?][] = [
   [73, 'Superscript', 'Super\x1b[73mscript\x1b[0m'],
   [74, 'Subscript', 'Sub\x1b[74mscript\x1b[0m'],
   [75, 'Superscript/subscript off', 'Super\x1b[73mon\x1b[75moff\x1b[0m, Sub\x1b[74mon\x1b[75moff\x1b[0m'],
-  [90, 'Foreground color - bright black'],
-  [91, 'Foreground color - bright red'],
-  [92, 'Foreground color - bright green'],
-  [93, 'Foreground color - bright yellow'],
-  [94, 'Foreground color - bright blue'],
-  [95, 'Foreground color - bright magenta'],
-  [96, 'Foreground color - bright cyan'],
-  [97, 'Foreground color - bright white'],
-  [100, 'Background color - bright black'],
-  [101, 'Background color - bright red'],
-  [102, 'Background color - bright green'],
-  [103, 'Background color - bright yellow'],
-  [104, 'Background color - bright blue'],
-  [105, 'Background color - bright magenta'],
-  [106, 'Background color - bright cyan'],
-  [107, 'Background color - bright white'],
+  [90, 'Foreground - bright black'],
+  [91, 'Foreground - bright red'],
+  [92, 'Foreground - bright green'],
+  [93, 'Foreground - bright yellow'],
+  [94, 'Foreground - bright blue'],
+  [95, 'Foreground - bright magenta'],
+  [96, 'Foreground - bright cyan'],
+  [97, 'Foreground - bright white'],
+  [100, 'Background - bright black'],
+  [101, 'Background - bright red'],
+  [102, 'Background - bright green'],
+  [103, 'Background - bright yellow'],
+  [104, 'Background - bright blue'],
+  [105, 'Background - bright magenta'],
+  [106, 'Background - bright cyan'],
+  [107, 'Background - bright white'],
 ];
 
 const SGRCodeTable = () => {
   return (
     <>
       <div className="mb-2 font-semibold">Supported SGR parameters:</div>
-      <table className="[&_th]:px-2 [&_td]:px-2 [&_td:first-child]:text-right text-sm">
+      <table className="[&_th]:px-2 [&_td]:px-2 [&_td:first-child]:text-right text-xs md:text-sm">
         <thead>
-          <tr>
+          <tr className="bg-chrome-100">
             <th className="text-right">n</th>
             <th className="text-left">Name</th>
             <th className="text-left">Example</th>
@@ -91,13 +91,13 @@ const SGRCodeTable = () => {
           {sgrParameters.map(([n, name, example]) => {
             const exampleStr = example || `\x1b[${n}m${name}\x1b[0m`;
             return (
-              <tr key={n} className="hover:bg-gray-50 dark:hover:bg-gray-900">
+              <tr key={n}>
                 <td>{n}</td>
                 <td>{name}</td>
                 <td><AnsiHtml text={exampleStr} /></td>
                 <td>
                   <a
-                    className="ml-1 text-sm text-blue-500 underline cursor-pointer"
+                    className="ml-1 text-sm text-blue-500 underline cursor-pointer hidden md:inline"
                     onClick={() => navigator.clipboard.writeText(exampleStr)}
                   >
                     copy
@@ -115,9 +115,9 @@ const SGRCodeTable = () => {
 const ExtendedColorsTable = () => (
   <>
     <div className="mt-10 mb-2 font-semibold">Extended Color Palette - (38|48|58);&#123;0-255&#125;</div>
-    <table className="[&_th]:px-2 [&_td]:px-2 [&_td:first-child]:text-right text-sm">
+    <table className="[&_th]:px-2 [&_td]:px-2 [&_td:first-child]:text-right text-xs md:text-sm">
       <thead>
-        <tr>
+        <tr className="bg-chrome-100">
           <th className="text-right">Code</th>
           <th className="text-left">Foreground</th>
           <th className="text-left">Background</th>
@@ -126,9 +126,9 @@ const ExtendedColorsTable = () => (
       </thead>
       <tbody>
         {Array.from({ length: 256 }, (_, i) => i).map(i => {
-          const exampleStrFg = `\x1b[38;5;${i}mColor Code - ${i}\x1b[0m`;
-          const exampleStrBg = `\x1b[48;5;${i}mColor Code - ${i}\x1b[0m`;
-          const exampleStrUl = `\x1b[4m\x1b[58;5;${i}mColor Code - ${i}\x1b[0m`;
+          const exampleStrFg = `\x1b[38;5;${i}mColor - ${i}\x1b[0m`;
+          const exampleStrBg = `\x1b[48;5;${i}mColor - ${i}\x1b[0m`;
+          const exampleStrUl = `\x1b[4m\x1b[58;5;${i}mColor - ${i}\x1b[0m`;
 
           return (
             <tr key={i}>
@@ -152,8 +152,9 @@ const FancyAnsiAscii = () => {
   const l5 = `\x1b[35m|_|  \\__,_|_| |_|\\___|\\__, |    /_/   \\_\\_| \\_|____/___|\x1b[0m`;
   const l6 = `\x1b[36m                      |___/                             \x1b[0m`;
 
+  // text-xs leading-[14px] md:text-base md:leading-[18px] 
   return (
-    <div className="whitespace-pre font-mono text-xs leading-[14px] md:text-base md:leading-[18px] ">
+    <div className="whitespace-pre font-mono text-[10px]/[12px] md:text-[16px]/[18px]">
       <AnsiHtml className="block" text={l1} />
       <AnsiHtml className="block" text={l2} />
       <AnsiHtml className="block" text={l3} />
@@ -166,10 +167,10 @@ const FancyAnsiAscii = () => {
 
 const Header = () => {
   return (
-    <div className="md:flex md:justify-between">
-      <FancyAnsiAscii />
+    <>
       <a className="text-blue-500 underline" href="https://github.com/kubetail-org/fancy-ansi.git">GitHub</a>
-    </div>
+      <FancyAnsiAscii />
+    </>
   );
 }
 
@@ -229,7 +230,7 @@ function App() {
     <div>
       <div className="p-2">
         <Header />
-        <hr className="my-5" />
+        <hr className="my-3" />
         <div>
           <div><label>Test:</label></div>
           <Form.Control
@@ -239,9 +240,9 @@ function App() {
             <AnsiHtml text={testStr} />
           </div>
         </div>
-        <hr className="my-5" />
+        <hr className="my-3" />
         <SGRCodeTable />
-        <hr className="my-5" />
+        <hr className="my-3" />
         <ExtendedColorsTable />
       </div>
       <div className="sticky bottom-0 bg-background p-2 border-t">
