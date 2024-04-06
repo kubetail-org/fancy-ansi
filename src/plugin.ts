@@ -14,7 +14,7 @@
 
 import plugin from 'tailwindcss/plugin';
 
-import colors from './colors';
+import * as colors from './colors';
 
 /**
  * Plugin
@@ -24,7 +24,9 @@ export default plugin(
   {
     theme: {
       ansi: {
-        colors,
+        colors: {
+          ...colors,
+        },
       },
     },
   },
