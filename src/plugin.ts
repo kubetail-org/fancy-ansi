@@ -24,7 +24,9 @@ export default plugin(
   {
     theme: {
       ansi: {
-        colors,
+        colors: {
+          ...colors,
+        },
       },
     },
   },
