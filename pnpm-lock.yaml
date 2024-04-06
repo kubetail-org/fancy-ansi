@@ -11,9 +11,6 @@ dependencies:
   escape-html:
     specifier: ^1.0.3
     version: 1.0.3
-  microtime:
-    specifier: ^3.1.1
-    version: 3.1.1
 
 devDependencies:
   '@rollup/plugin-typescript':
@@ -88,6 +85,9 @@ devDependencies:
   jsdom:
     specifier: ^24.0.0
     version: 24.0.0
+  microtime:
+    specifier: ^3.1.1
+    version: 3.1.1
   postcss:
     specifier: ^8.4.38
     version: 8.4.38
@@ -3410,7 +3410,7 @@ packages:
     dependencies:
       node-addon-api: 5.1.0
       node-gyp-build: 4.8.0
-    dev: false
+    dev: true
 
   /mime-db@1.52.0:
     resolution: {integrity: sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==}
@@ -3500,12 +3500,12 @@ packages:
 
   /node-addon-api@5.1.0:
     resolution: {integrity: sha512-eh0GgfEkpnoWDq+VY8OyvYhFEzBk6jIYbRKdIlyTiAXIVJ8PyBaKb0rp7oDtoddbdoHWhq8wwr+XZ81F1rpNdA==}
-    dev: false
+    dev: true
 
   /node-gyp-build@4.8.0:
     resolution: {integrity: sha512-u6fs2AEUljNho3EYTJNBfImO5QTo/J/1Etd+NVdCj7qWKUSN/bSLkZwhDv7I+w/MSC6qJ4cknepkAYykDdK8og==}
     hasBin: true
-    dev: false
+    dev: true
 
   /node-releases@2.0.14:
     resolution: {integrity: sha512-y10wOWt8yZpqXmOgRo77WaHEmhYQYGNA6y421PKsKYWEK8aW+cqAphborZDhqfyKrbZEN92CN1X2KbafY2s7Yw==}
