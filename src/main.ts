@@ -183,7 +183,7 @@ function processSGRPacket(packet: Packet, attrs: StyleAttrs) {
   }
 
   packet.text.split(';').forEach((codeStr) => {
-    const code = parseInt(codeStr, 10);
+    const code = parseInt(codeStr || '0', 10);
 
     // handle reset
     if (code === 0) {

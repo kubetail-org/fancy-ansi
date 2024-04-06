@@ -16,6 +16,10 @@
       "import": "./dist/main.js",
       "require": "./dist/main.cjs"
     },
+    "./colors": {
+      "import": "./dist/colors.js",
+      "require": "./dist/colors.cjs"
+    },
     "./plugin": {
       "import": "./dist/plugin.js",
       "require": "./dist/plugin.cjs"

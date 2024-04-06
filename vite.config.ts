@@ -32,6 +32,7 @@ export default defineConfig({
     lib: {
       entry: [
         resolve(__dirname, 'src/main.ts'),
+        resolve(__dirname, 'src/colors.ts'),
         resolve(__dirname, 'src/plugin.ts'),
         resolve(__dirname, 'src/react.tsx'),
       ],

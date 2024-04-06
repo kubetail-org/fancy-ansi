@@ -210,15 +210,3 @@ export const eclipse = {
   [StandardColorKeys.BrightCyan]: '#00ffff',
   [StandardColorKeys.BrightWhite]: '#ffffff',
 };
-
-export default {
-  xtermjs,
-  vga,
-  vscode,
-  windows10,
-  terminalapp,
-  putty,
-  xterm,
-  ubuntu,
-  eclipse,
-};

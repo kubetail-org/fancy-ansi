@@ -39,6 +39,20 @@ describe('parse', () => {
     expect(packets[0].text).toEqual('0');
   });
 
+  it('returns one packet of kind `SGR` for a string with no escape codes', () => {
+    const packets = parse('\x1b[m');
+    expect(packets.length).toEqual(1);
+    expect(packets[0].kind).toEqual(PacketKind.SGR);
+    expect(packets[0].text).toEqual('');
+  });
+
+  it('returns one packet of kind `SGR` for a string with semicolon but no codes', () => {
+    const packets = parse('\x1b[;m');
+    expect(packets.length).toEqual(1);
+    expect(packets[0].kind).toEqual(PacketKind.SGR);
+    expect(packets[0].text).toEqual(';');
+  });
+
   it('returns packets of kind `OSCURL` for strings with non-SGR, non-OSCURL escape codes', () => {
     const packets = parse('\x1b]8;;http://example.com\x07click me\x1b]8;;\x07');
     expect(packets.length).toEqual(1);
