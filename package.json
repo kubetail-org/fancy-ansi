@@ -1,7 +1,7 @@
 {
   "name": "fancy-ansi",
-  "version": "0.1.0",
-  "description": "Small JavaScript library for rendering ANSI markup in the browser",
+  "version": "0.1.1-rc1",
+  "description": "Small JavaScript library for converting ANSI to HTML",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
