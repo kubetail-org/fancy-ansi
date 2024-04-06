@@ -39,6 +39,18 @@ describe('FancyAnsi', () => {
     expect(output).toEqual('<span style="font-weight:var(--ansi-bold-font-weight, 600);">bold</span>');
   });
 
+  it('treats missing code as reset', () => {
+    const fancyAnsi = new FancyAnsi();
+    const output = fancyAnsi.toHtml('\x1b[1mon\x1b[moff');
+    expect(output).toEqual('<span style="font-weight:var(--ansi-bold-font-weight, 600);">on</span>off');
+  });
+
+  it('treats missing codes as reset', () => {
+    const fancyAnsi = new FancyAnsi();
+    const output = fancyAnsi.toHtml('\x1b[1mon\x1b[;moff');
+    expect(output).toEqual('<span style="font-weight:var(--ansi-bold-font-weight, 600);">on</span>off');
+  });
+
   it('ignores extra reset at start', () => {
     const fancyAnsi = new FancyAnsi();
     const output = fancyAnsi.toHtml('\x1b[0m\x1b[1mbold\x1b[0m');

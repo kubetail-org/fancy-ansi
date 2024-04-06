@@ -14,7 +14,7 @@
 
 import plugin from 'tailwindcss/plugin';
 
-import colors from './colors';
+import * as colors from './colors';
 
 /**
  * Plugin
