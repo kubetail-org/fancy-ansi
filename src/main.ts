@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import AnsiRegex from 'ansi-regex';
 import escape from 'escape-html';
 
+import AnsiRegex from '@/ansi-regex';
 import { StandardColorKeys, xtermjs } from '@/colors';
 import { Packet, PacketKind, Parser } from '@/parse';
 import { StyleAttrs, StyleAttrsKeys } from '@/style-attrs';
