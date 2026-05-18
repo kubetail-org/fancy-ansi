@@ -34,7 +34,7 @@
   ],
   "scripts": {
     "build": "tsc && vite build",
-    "build-bench": "vite build --config vite-bench.config.ts",
+    "build-umd": "tsc && vite build --config vite.umd.config.ts",
     "dev": "vite",
     "lint": "eslint \"./src/**/*.ts{,x}\"",
     "test": "vitest"
