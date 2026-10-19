@@ -22,7 +22,9 @@
       "require": "./dist/colors.cjs"
     },
     "./plugin": {
-      "style": "./dist/plugin.css"
+      "style": "./dist/plugin.css",
+      "import": "./dist/plugin.js",
+      "require": "./dist/plugin.cjs"
     },
     "./react": {
       "import": "./dist/react.js",
@@ -78,7 +80,7 @@
     "vitest": "^5.0.5"
   },
   "peerDependencies": {
-    "tailwindcss": "^4"
+    "tailwindcss": "^3 || ^4"
   },
   "peerDependenciesMeta": {
     "tailwindcss": {

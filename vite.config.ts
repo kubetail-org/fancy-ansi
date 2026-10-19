@@ -47,6 +47,7 @@ export default defineConfig({
       entry: [
         resolve(import.meta.dirname, 'src/main.ts'),
         resolve(import.meta.dirname, 'src/colors.ts'),
+        resolve(import.meta.dirname, 'src/plugin.ts'),
         resolve(import.meta.dirname, 'src/react.tsx'),
       ],
       name: 'fancyAnsi',
