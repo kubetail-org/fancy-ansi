@@ -11,6 +11,12 @@ Small TypeScript library that converts ANSI escape sequences to HTML. Ships four
 
 CI runs lint, test and build on every pull request.
 
+## Sandbox
+
+The repo is shared with a macOS host. `scripts/sandbox-dev-setup.sh` runs at session start (`.claude/settings.json`) and keeps Linux builds separate. It bind-mounts `node_modules` and `dist` from `.sandbox-linux/` and puts the pnpm store there too. It also installs the Node major in `.node-version`, which CI reads as well. It does nothing outside the sandbox.
+
+The mounts don't survive a sandbox restart. If `node_modules` looks like the host's, re-run the script.
+
 ## Writing standards
 
 Applies to every hand-written file. Not to generated output (`dist/`, `src/__snapshots__/`, lockfiles) or vendored code (`src/ansi-regex.ts`).
