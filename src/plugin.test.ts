@@ -15,6 +15,7 @@
 import { compile } from '@tailwindcss/node';
 
 import * as colors from './colors';
+import plugin from './plugin';
 
 // Vitest doesn't inline const enums, so `StandardColorKeys` is exported at runtime too
 const palettes = Object.entries(colors).filter(([, value]) => 'black' in value);
@@ -53,5 +54,11 @@ describe('plugin.css', () => {
     expect(output).toContain(`--ansi-vscode-red: ${colors.vscode.red};`);
     expect(output).toMatch(/\.ansi-vscode \{\s+--ansi-black: var\(--ansi-vscode-black\);/);
     expect(output).toMatch(/\.dark\\:ansi-xtermjs:where\(\.dark, \.dark \*\) \{\s+--ansi-black: var\(--ansi-xtermjs-black\);/);
+  });
+});
+
+describe('plugin.ts', () => {
+  it('exposes the palettes in the theme', () => {
+    expect(plugin.config.theme.ansi.colors.vscode).toEqual(colors.vscode);
   });
 });

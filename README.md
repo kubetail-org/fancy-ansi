@@ -19,7 +19,7 @@ To solve these problems and make something that integrated nicely into our front
 
 * Supports easy customization using CSS variables
 * Supports almost all SGR codes
-* Includes a Tailwind v4 plugin that enables support for easy theming
+* Includes a Tailwind plugin (v3 and v4) that enables support for easy theming
 * Includes a React component for easy use in a React environment
 * Includes useful utilities like `hasAnsi()` and `stripAnsi()` that come in handy when working with ANSI
 * Includes popular color palettes that can be swapped in easily
@@ -195,7 +195,7 @@ Extended colors:
 
 ### Tailwind
 
-The Fancy-ANSI Tailwind plugin adds a utility for each built-in palette. It requires Tailwind v4. To use the plugin, import it in your css after Tailwind:
+The Fancy-ANSI Tailwind plugin adds a utility for each built-in palette. To use the plugin with Tailwind v4, import it in your css after Tailwind:
 
 ```css
 /* index.css */
@@ -218,6 +218,27 @@ You can also apply them in your css:
 ```
 
 Individual palette colors are available as theme variables named `--ansi-{palette}-{color}` (e.g. `var(--ansi-vscode-red)`).
+
+#### Tailwind v3
+
+With Tailwind v3, add the plugin to your `tailwind.config.js` file:
+
+```js
+// tailwind.config.js
+module.exports = {
+  plugins: [
+    require('fancy-ansi/plugin')
+  ]
+}
+```
+
+The palettes are available through the `theme()` function as `ansi.colors.{palette}.{color}`:
+
+```css
+:root {
+  --ansi-red: theme(ansi.colors.vscode.red);
+}
+```
 
 ### React
 

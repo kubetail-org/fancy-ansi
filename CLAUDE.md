@@ -1,6 +1,6 @@
 # Fancy-ANSI
 
-Small TypeScript library that converts ANSI escape sequences to HTML. Ships four entry points: `fancy-ansi` (`src/main.ts`), `/colors`, `/plugin` (Tailwind v4 stylesheet) and `/react`.
+Small TypeScript library that converts ANSI escape sequences to HTML. Ships four entry points: `fancy-ansi` (`src/main.ts`), `/colors`, `/plugin` (Tailwind v4 stylesheet via the `style` export condition, v3 JS plugin via `import`/`require`) and `/react`.
 
 `src/plugin.css` is generated from `src/colors.ts` by `src/plugin.test.ts`. After changing a palette, run `pnpm test run -u`.
 
