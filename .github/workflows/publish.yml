@@ -9,17 +9,14 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      packages: write
       contents: read
+      id-token: write # npm trusted publishing
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v7
         with:
           node-version-file: .node-version
-          registry-url: https://registry.npmjs.org
       - uses: pnpm/action-setup@v6
       - run: pnpm install
       - run: pnpm build
       - run: pnpm publish --no-git-checks --access public
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
