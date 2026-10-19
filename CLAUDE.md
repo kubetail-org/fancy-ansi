@@ -1,0 +1,25 @@
+# Fancy-ANSI
+
+Small TypeScript library that converts ANSI escape sequences to HTML. Ships four entry points: `fancy-ansi` (`src/main.ts`), `/colors`, `/plugin` (Tailwind) and `/react`.
+
+## Commands
+
+- `pnpm lint` — ESLint over `src/`
+- `pnpm test run` — Vitest, single run (`pnpm test` watches)
+- `pnpm build` — type-check and build `dist/`
+- `pnpm dev` — Vite playground in `hack/`
+
+CI runs lint, test and build on every pull request.
+
+## Writing standards
+
+Applies to every hand-written file. Not to generated output (`dist/`, `src/__snapshots__/`, lockfiles) or vendored code (`src/ansi-regex.ts`).
+
+1. **Code — simple, idiomatic, easy to follow.** Prefer the boring construction. Match the idiom of the file you are in.
+2. **Comments — terse and necessary.** Say what the code cannot: the *why*, the invariant, the trap. Never restate the line. Describe the current design, not the alternatives you rejected.
+3. **Documentation — simple and concise.** Lead with what is true now. One idea per sentence.
+
+## Commits and pull requests
+
+- **Commits are terse [conventional commits](https://www.conventionalcommits.org)**: `type(scope): subject` — `feat`/`fix`/`perf`/`refactor`/`test`/`docs`/`chore`, scope only when it adds information (`react`, `plugin`), `!` for breaking. Subject imperative, lower-case, no period, ≤72 chars. No body unless the why isn't obvious — then 1–3 plain sentences.
+- **Pull requests follow [`.github/pull_request_template.md`](.github/pull_request_template.md)**: keep `Summary` (why), `Key Changes` (what), `Checklist`. The title is a natural, capitalized title led by the change type's emoji — 🎣 bug fix, 🐋 new feature, 📜 documentation, ✨ general improvement.
