@@ -25,16 +25,16 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': resolve(__dirname, './src'),
+      '@': resolve(import.meta.dirname, './src'),
     },
   },
   build: {
     lib: {
       entry: [
-        resolve(__dirname, 'src/main.ts'),
-        resolve(__dirname, 'src/colors.ts'),
-        resolve(__dirname, 'src/plugin.ts'),
-        resolve(__dirname, 'src/react.tsx'),
+        resolve(import.meta.dirname, 'src/main.ts'),
+        resolve(import.meta.dirname, 'src/colors.ts'),
+        resolve(import.meta.dirname, 'src/plugin.ts'),
+        resolve(import.meta.dirname, 'src/react.tsx'),
       ],
       name: 'fancyAnsi',
       formats: ["es", "cjs"],

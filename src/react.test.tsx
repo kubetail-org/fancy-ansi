@@ -32,7 +32,7 @@ describe('AnsiHtml', () => {
 
   it('passes through style', () => {
     const x = '\x1b[1mbold\x1b[0m';
-    const { asFragment } = render(<AnsiHtml style={{ whiteSpace: 'no-wrap' }} text={x} />);
+    const { asFragment } = render(<AnsiHtml style={{ whiteSpace: 'nowrap' }} text={x} />);
     expect(asFragment()).toMatchSnapshot();
   });
 });
