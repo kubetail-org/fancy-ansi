@@ -19,7 +19,7 @@ To solve these problems and make something that integrated nicely into our front
 
 * Supports easy customization using CSS variables
 * Supports almost all SGR codes
-* Includes a Tailwind plugin that enables support for easy theming
+* Includes a Tailwind v4 plugin that enables support for easy theming
 * Includes a React component for easy use in a React environment
 * Includes useful utilities like `hasAnsi()` and `stripAnsi()` that come in handy when working with ANSI
 * Includes popular color palettes that can be swapped in easily
@@ -195,65 +195,29 @@ Extended colors:
 
 ### Tailwind
 
-The Fancy-ANSI Tailwind plugin makes it easy to support theming and to access multiple built-in palettes from your css. To use the plugin, add it to your `tailwind.config.js` file:
-
-```js
-// tailwind.config.js
-module.exports = {
-  plugins: [
-    // ...
-    require('fancy-ansi/plugin')
-  ]
-}
-```
-
-Now you can access the built-in palettes using the Tailwind `theme()` function. For example, you can implement two different palettes for light/dark mode like this:
+The Fancy-ANSI Tailwind plugin adds a utility for each built-in palette. It requires Tailwind v4. To use the plugin, import it in your css after Tailwind:
 
 ```css
 /* index.css */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-@layer base {
-  :root {
-    --ansi-black: theme(ansi.colors.vscode.black);
-    --ansi-red: theme(ansi.colors.vscode.red);
-    --ansi-green: theme(ansi.colors.vscode.green);
-    --ansi-yellow: theme(ansi.colors.vscode.yellow);
-    --ansi-blue: theme(ansi.colors.vscode.blue);
-    --ansi-magenta: theme(ansi.colors.vscode.magenta);
-    --ansi-cyan: theme(ansi.colors.vscode.cyan);
-    --ansi-white: theme(ansi.colors.vscode.white);
-    --ansi-bright-black: theme(ansi.colors.vscode.bright-black);
-    --ansi-bright-red: theme(ansi.colors.vscode.bright-red);
-    --ansi-bright-green: theme(ansi.colors.vscode.bright-green);
-    --ansi-bright-yellow: theme(ansi.colors.vscode.bright-yellow);
-    --ansi-bright-blue: theme(ansi.colors.vscode.bright-blue);
-    --ansi-bright-magenta: theme(ansi.colors.vscode.magenta);
-    --ansi-bright-cyan: theme(ansi.colors.vscode.cyan);
-    --ansi-bright-white: theme(ansi.colors.vscode.white);
-  }
-
-  .dark {
-    --ansi-black: theme(ansi.colors.xtermjs.black);
-    --ansi-red: theme(ansi.colors.xtermjs.red);
-    --ansi-green: theme(ansi.colors.xtermjs.green);
-    --ansi-yellow: theme(ansi.colors.xtermjs.yellow);
-    --ansi-blue: theme(ansi.colors.xtermjs.blue);
-    --ansi-magenta: theme(ansi.colors.xtermjs.magenta);
-    --ansi-cyan: theme(ansi.colors.xtermjs.cyan);
-    --ansi-white: theme(ansi.colors.xtermjs.white);
-    --ansi-bright-black: theme(ansi.colors.xtermjs.bright-black);
-    --ansi-bright-red: theme(ansi.colors.xtermjs.bright-red);
-    --ansi-bright-green: theme(ansi.colors.xtermjs.bright-green);
-    --ansi-bright-yellow: theme(ansi.colors.xtermjs.bright-yellow);
-    --ansi-bright-blue: theme(ansi.colors.xtermjs.bright-blue);
-    --ansi-bright-magenta: theme(ansi.colors.xtermjs.magenta);
-    --ansi-bright-cyan: theme(ansi.colors.xtermjs.cyan);
-    --ansi-bright-white: theme(ansi.colors.xtermjs.white);
-  }
+@import "tailwindcss";
+@import "fancy-ansi/plugin";
 ```
+
+Each `ansi-{palette}` utility sets the `--ansi-{color}` variables to that palette. The palettes are `xtermjs`, `vga`, `vscode`, `windows10`, `terminalapp`, `putty`, `xterm`, `ubuntu` and `eclipse`. Utilities work with variants, so you can use one palette in light mode and another in dark mode:
+
+```html
+<html class="ansi-vscode dark:ansi-xtermjs">
+```
+
+You can also apply them in your css:
+
+```css
+:root {
+  @apply ansi-vscode dark:ansi-xtermjs;
+}
+```
+
+Individual palette colors are available as theme variables named `--ansi-{palette}-{color}` (e.g. `var(--ansi-vscode-red)`).
 
 ### React
 
