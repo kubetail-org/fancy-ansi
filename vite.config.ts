@@ -42,10 +42,10 @@ export default defineConfig({
     rollupOptions: {
       plugins: [
         typescript({
+          tsconfig: "tsconfig.build.json",
           sourceMap: false,
           declaration: true,
-          outDir: "dist",
-          include: ['src/**/*']
+          outDir: "dist"
         }),
         autoExternal(),
       ],

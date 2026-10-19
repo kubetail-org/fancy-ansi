@@ -12,7 +12,7 @@
     "skipLibCheck": true,
 
     /* bundler mode */
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     //"isolatedModules": true,
     "preserveConstEnums": false,
@@ -28,7 +28,6 @@
     "noUnusedParameters": true,
 
     /* import paths */
-    "baseUrl": ".",
     "paths": {
       "@/*": [
         "./src/*"
@@ -37,6 +36,7 @@
 
     /* misc */
     "types": [
+      "vite/client",
       "vitest/globals"
     ]
   },
