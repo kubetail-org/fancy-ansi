@@ -22,3 +22,15 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Agents. Ignore the directory's contents rather than the directory itself, so
+# the shared team config below can be re-included — a negation cannot resurrect
+# a file whose parent directory is excluded. Personal settings
+# (settings.local.json), worktrees, and lock files stay ignored.
+CLAUDE.local.md
+.claude/*
+!.claude/settings.json
+
+# Sandbox (scripts/sandbox-dev-setup.sh)
+.sandbox-linux
+.pnpm-store
