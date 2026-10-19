@@ -1,6 +1,8 @@
 # Fancy-ANSI
 
-Small TypeScript library that converts ANSI escape sequences to HTML. Ships four entry points: `fancy-ansi` (`src/main.ts`), `/colors`, `/plugin` (Tailwind) and `/react`.
+Small TypeScript library that converts ANSI escape sequences to HTML. Ships four entry points: `fancy-ansi` (`src/main.ts`), `/colors`, `/plugin` (Tailwind v4 stylesheet) and `/react`.
+
+`src/plugin.css` is generated from `src/colors.ts` by `src/plugin.test.ts`. After changing a palette, run `pnpm test run -u`.
 
 ## Commands
 
@@ -19,7 +21,7 @@ The mounts don't survive a sandbox restart. If `node_modules` looks like the hos
 
 ## Writing standards
 
-Applies to every hand-written file. Not to generated output (`dist/`, `src/__snapshots__/`, lockfiles) or vendored code (`src/ansi-regex.ts`).
+Applies to every hand-written file. Not to generated output (`dist/`, `src/__snapshots__/`, `src/plugin.css`, lockfiles) or vendored code (`src/ansi-regex.ts`).
 
 1. **Code — simple, idiomatic, easy to follow.** Prefer the boring construction. Match the idiom of the file you are in.
 2. **Comments — terse and necessary.** Say what the code cannot: the *why*, the invariant, the trap. Never restate the line. Describe the current design, not the alternatives you rejected.
