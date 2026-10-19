@@ -13,6 +13,8 @@ Small TypeScript library that converts ANSI escape sequences to HTML. Ships four
 
 CI runs lint, test and build on every pull request.
 
+To release, push a `v<version>` tag to `kubetail-org/fancy-ansi` (e.g. `v1.2.3`, `v1.2.3-rc1`). The publish workflow sets the package version from the tag and publishes prereleases under the `next` dist-tag. The `0.0.0-development` version in `package.json` is a placeholder.
+
 ## Sandbox
 
 The repo is shared with a macOS host. `scripts/sandbox-dev-setup.sh` runs at session start (`.claude/settings.json`) and keeps Linux builds separate. It bind-mounts `node_modules` and `dist` from `.sandbox-linux/` and puts the pnpm store there too. It also installs the Node major in `.node-version`, which CI reads as well. It does nothing outside the sandbox.
