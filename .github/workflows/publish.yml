@@ -7,6 +7,7 @@ on:
 
 jobs:
   publish:
+    if: github.repository == 'kubetail-org/fancy-ansi'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -19,4 +20,8 @@ jobs:
       - uses: pnpm/action-setup@v6
       - run: pnpm install
       - run: pnpm build
-      - run: pnpm publish --no-git-checks --access public
+      # The tag is the source of truth for the version (e.g. v1.2.3, v1.2.3-rc1)
+      - run: npm version "${GITHUB_REF_NAME#v}" --no-git-tag-version --allow-same-version
+      - run: |
+          if [[ "$GITHUB_REF_NAME" == *-* ]]; then dist_tag=next; else dist_tag=latest; fi
+          pnpm publish --no-git-checks --access public --tag "$dist_tag"
