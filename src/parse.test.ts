@@ -53,12 +53,18 @@ describe('parse', () => {
     expect(packets[0].text).toEqual(';');
   });
 
-  it('returns packets of kind `OSCURL` for strings with non-SGR, non-OSCURL escape codes', () => {
-    const packets = parse('\x1b]8;;http://example.com\x07click me\x1b]8;;\x07');
-    expect(packets.length).toEqual(1);
+  it('returns packets of kind `OSCURL` around hyperlink text', () => {
+    const packets = parse('\x1b]8;;http://example.com\x07click me\x1b]8;;\x1b\\');
+    expect(packets.length).toEqual(3);
+
     expect(packets[0].kind).toEqual(PacketKind.OSCURL);
-    expect(packets[0].text).toEqual('click me');
     expect(packets[0].url).toEqual('http://example.com');
+
+    expect(packets[1].kind).toEqual(PacketKind.Text);
+    expect(packets[1].text).toEqual('click me');
+
+    expect(packets[2].kind).toEqual(PacketKind.OSCURL);
+    expect(packets[2].url).toEqual('');
   });
 
   it('returns packets of kind `Unknown` for strings with non-SGR, non-OSCURL escape codes', () => {
@@ -107,7 +113,6 @@ describe('parse', () => {
     ['CSI', '\x1b[1'],
     ['OSC', '\x1b]8'],
     ['OSC without terminator', '\x1b]8;;url'],
-    ['OSC without closing sequence', '\x1b]8;;url\x07text'],
   ])('drops incomplete %s at end of input', (_, input) => {
     expect(parse(input)).toEqual([]);
   });
@@ -119,8 +124,7 @@ describe('parse', () => {
     ['CSI with DEL', '\x1b[1\x7f rest'],
     ['non-hyperlink OSC', '\x1b]0;title'],
     ['illegal char in OSC url', '\x1b]8;;url\x01'],
-    ['illegal char in OSC text', '\x1b]8;;url\x07te\x01xt'],
-    ['malformed OSC', '\x1b]8;;url\x07\x07'],
+    ['OSC without url separator', '\x1b]8;url\x07'],
   ])('drops only the ESC from %s', (_, input) => {
     const packets = parse(input);
     expect(packets[0].kind).toEqual(PacketKind.ESC);
