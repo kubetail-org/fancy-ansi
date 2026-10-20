@@ -118,6 +118,15 @@ describe('FancyAnsi', () => {
     const output = fancyAnsi.toHtml('a\x1b[2Kb\x1b(Bc');
     expect(output).toEqual('abc');
   });
+
+  it.each([
+    ['see \x1b]8;;https://example.com\x1b\\link text\x1b]8;;\x1b\\ after', 'see link text after'],
+    ['\x1b]8;id=1;https://example.com\x07l\u00efnk\x1b]8;;\x07', 'l\u00efnk'],
+    ['\x1b]8;;https://example.com\x07\x1b[1mbold\x1b[0m\x1b]8;;\x07', '<span style="font-weight:var(--ansi-bold-font-weight, 600);">bold</span>'],
+  ])('renders OSC 8 hyperlink text: %j', (input, expected) => {
+    const fancyAnsi = new FancyAnsi();
+    expect(fancyAnsi.toHtml(input)).toEqual(expected);
+  });
 });
 
 describe('FancyAnsi with untrusted input', () => {

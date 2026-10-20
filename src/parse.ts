@@ -46,14 +46,7 @@ const oscRegex = rgx`
   \x1b\]8;                    # OSC Hyperlink
   [\x20-\x3a\x3c-\x7e]*       # params (excluding ;)
   ;                           # end of params
-  ([\x21-\x7e]{0,512})        # URL capture
-  (?:                         # ST
-    (?:\x1b\\)                  # ESC \
-    |                           # alternate
-    (?:\x07)                    # BEL (what xterm did)
-  )
-  ([\x20-\x7e]+)              # TEXT capture
-  \x1b\]8;;                   # OSC Hyperlink End
+  ([\x21-\x7e]{0,512})        # URL capture (empty closes the link)
   (?:                         # ST
     (?:\x1b\\)                  # ESC \
     |                           # alternate
@@ -61,7 +54,7 @@ const oscRegex = rgx`
   )
 `;
 
-const oscTerminatorRegex = rgxG`
+const oscTerminatorRegex = rgx`
   (?:                         # legal sequence
     (\x1b\\)                    # ESC \
     |                           # alternate
@@ -79,8 +72,8 @@ const oscTerminatorRegex = rgxG`
 */
 
 const csiRegex = /^(?:\x1b\[([\x3c-\x3f]?)([\d;]*)([\x20-\x2f]?[\x40-\x7e]))|(?:\x1b\[[\x20-\x7e]*([^\x20-\x39\x3b-\x7e]))/;
-const oscRegex = /^\x1b\]8;[\x20-\x3a\x3c-\x7e]*;([\x21-\x7e]{0,512})(?:(?:\x1b\\)|(?:\x07))([\x20-\x7e]+)\x1b\]8;;(?:(?:\x1b\\)|(?:\x07))/;
-const oscTerminatorRegex = /(?:(\x1b\\)|(\x07))|([\x00-\x06]|[\x08-\x1a]|[\x1c-\x1f])/g;
+const oscRegex = /^\x1b\]8;[\x20-\x3a\x3c-\x7e]*;([\x21-\x7e]{0,512})(?:(?:\x1b\\)|(?:\x07))/;
+const oscTerminatorRegex = /(?:(\x1b\\)|(\x07))|([\x00-\x06]|[\x08-\x1a]|[\x1c-\x1f])/;
 
 /**
  * Represents the different kinds of packets that can be parsed
@@ -218,47 +211,13 @@ export class Parser implements IterableIterator<Packet> {
         return { value: pkt, done: false };
       }
 
-      // We do a stateful regex match with exec.
-      // If it matches, the regex can be used again to
-      // find the next match.
-      const regex = new RegExp(oscTerminatorRegex);
+      // OSC 8 opens a hyperlink (with a URL) or closes one (empty URL). The
+      // link text between them is parsed like any other text.
+      const terminator = remaining.match(oscTerminatorRegex);
 
-      {
-        const match = regex.exec(remaining);
+      if (terminator === null) return { value: null, done: true };
 
-        if (match === null) return { value: null, done: true };
-
-        // If an illegal character was found, bail on the match
-        if (match[3]) {
-          // Illegal sequence, just remove the ESC
-          pkt.kind = PacketKind.ESC;
-          pkt.text = remaining[0];
-          this.lastIndex += 1;
-          return { value: pkt, done: false };
-        }
-      }
-
-      // OK - we might have the prefix and URI
-      // Lets start our search for the next ST
-      // past this index
-
-      {
-        const match = regex.exec(remaining);
-
-        if (match === null) return { value: null, done: true };
-
-        // If an illegal character was found, bail on the match
-        if (match[3]) {
-          // Illegal sequence, just remove the ESC
-          pkt.kind = PacketKind.ESC;
-          pkt.text = remaining[0];
-          this.lastIndex += 1;
-          return { value: pkt, done: false };
-        }
-      }
-
-      // now we have a full match
-      const match = remaining.match(oscRegex);
+      const match = terminator[3] ? null : remaining.match(oscRegex);
 
       if (match === null) {
         // Illegal sequence, just remove the ESC
@@ -268,15 +227,8 @@ export class Parser implements IterableIterator<Packet> {
         return { value: pkt, done: false };
       }
 
-      // match is an array
-      // 0 - total match
-      // 1 - URL
-      // 2 - Text
-
-      // If a valid SGR
       pkt.kind = PacketKind.OSCURL;
       pkt.url = match[1];
-      pkt.text = match[2];
       this.lastIndex += match[0].length;
       return { value: pkt, done: false };
     }
