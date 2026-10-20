@@ -35,4 +35,18 @@ describe('AnsiHtml', () => {
     const { asFragment } = render(<AnsiHtml style={{ whiteSpace: 'nowrap' }} text={x} />);
     expect(asFragment()).toMatchSnapshot();
   });
+
+  it.each([
+    '<img src="x" onerror=\'alert(1)\'>',
+    '\x1b[1m<script>alert(1)</script>',
+    '\x1b[38;2;"><img src=x onerror=alert(1)>m',
+    'a\x1b[1\x01<img src=x onerror=alert(1)>',
+    '\x1b]8;;javascript:alert(1)\x07<b>link</b>\x1b]8;;\x07',
+  ])('renders untrusted input as text and styled spans: %j', (text) => {
+    const { container } = render(<AnsiHtml text={text} />);
+    container.querySelectorAll('span *').forEach((el) => {
+      expect(el.tagName).toEqual('SPAN');
+      expect(el.getAttributeNames()).toEqual(['style']);
+    });
+  });
 });

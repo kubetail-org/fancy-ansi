@@ -109,6 +109,13 @@ describe('StyleAttrs', () => {
         expect(attrs.get(StyleAttrsKeys.BackgroundColor)).toEqual(undefined);
         expect(attrs.size).toEqual(1);
       });
+
+      it('ignores inherited values', () => {
+        const attrs = new StyleAttrs();
+        attrs.update(Object.create({ [StyleAttrsKeys.Color]: 'red' }));
+        expect(attrs.get(StyleAttrsKeys.Color)).toEqual(undefined);
+        expect(attrs.size).toEqual(0);
+      });
     });
 
     describe('.clear()', () => {
@@ -196,6 +203,15 @@ describe('StyleAttrs', () => {
         const fn = StyleAttrs.appendVal(StyleAttrsKeys.Color, 'green');
         fn(attrs);
         expect(attrs.get(StyleAttrsKeys.Color)).toEqual('red green');
+      });
+
+      it('returns attribute modifier that doesnt append value when present', () => {
+        const attrs = new StyleAttrs();
+        attrs.set(StyleAttrsKeys.Color, 'red');
+
+        const fn = StyleAttrs.appendVal(StyleAttrsKeys.Color, 'red');
+        fn(attrs);
+        expect(attrs.get(StyleAttrsKeys.Color)).toEqual('red');
       });
     });
 

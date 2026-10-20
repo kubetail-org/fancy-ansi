@@ -69,6 +69,11 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
-    setupFiles: ['vitest.setup.ts']
+    setupFiles: ['vitest.setup.ts'],
+    coverage: {
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: ['src/**/*.test.{ts,tsx}', 'src/ansi-regex.ts'],
+      thresholds: { 100: true },
+    },
   }
 });

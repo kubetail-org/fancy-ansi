@@ -8,10 +8,11 @@ Small TypeScript library that converts ANSI escape sequences to HTML. Ships four
 
 - `pnpm lint` — ESLint over `src/`
 - `pnpm test run` — Vitest, single run (`pnpm test` watches)
+- `pnpm coverage` — single run with coverage; fails below 100%
 - `pnpm build` — type-check and build `dist/`
 - `pnpm dev` — Vite playground in `hack/`
 
-CI runs lint, test and build on every pull request.
+CI runs lint, coverage and build on every pull request.
 
 To release, push a `v<version>` tag to `kubetail-org/fancy-ansi` (e.g. `v1.2.3`, `v1.2.3-rc1`). The publish workflow sets the package version from the tag and publishes prereleases under the `next` dist-tag. The `0.0.0-development` version in `package.json` is a placeholder.
 
