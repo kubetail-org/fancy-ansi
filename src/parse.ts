@@ -22,8 +22,6 @@
 
 /*
 const csiRegex = rgx`
-  ^                           # beginning of line
-                              #
                               # First attempt
   (?:                         # legal sequence
     \x1b\[                      # CSI
@@ -41,8 +39,6 @@ const csiRegex = rgx`
 `;
 
 const oscRegex = rgx`
-  ^                           # beginning of line
-                              #
                               # First attempt
   (?:                         # legal sequence
     \x1b\]8;                    # OSC Hyperlink
@@ -68,8 +64,12 @@ const oscRegex = rgx`
 `;
 */
 
-const csiRegex = /^(?:\x1b\[([\x3c-\x3f]?)([\d;]*)([\x20-\x2f]?[\x40-\x7e]))|(?:\x1b\[[\x20-\x7e]*([^\x20-\x39\x3b-\x7e]))/;
-const oscRegex = /^(?:\x1b\]8;[\x20-\x3a\x3c-\x7e]*;([\x21-\x7e]{0,512})(?:\x1b\\|\x07))|(?:\x1b\]8;[^\x00-\x1a\x1c-\x1f]*(\x1b\\|[\x00-\x1a\x1c-\x1f]))/;
+// Both are sticky: they match at `lastIndex` in the full input, so `next()` must
+// set `lastIndex` right before each `exec()`. ansi_up anchors only the legal
+// alternative, but anchoring both doesn't change matches: if the illegal one
+// fails at the start, it can't match further ahead either.
+const csiRegex = /(?:\x1b\[([\x3c-\x3f]?)([\d;]*)([\x20-\x2f]?[\x40-\x7e]))|(?:\x1b\[[\x20-\x7e]*([^\x20-\x39\x3b-\x7e]))/y;
+const oscRegex = /(?:\x1b\]8;[\x20-\x3a\x3c-\x7e]*;([\x21-\x7e]{0,512})(?:\x1b\\|\x07))|(?:\x1b\]8;[^\x00-\x1a\x1c-\x1f]*(\x1b\\|[\x00-\x1a\x1c-\x1f]))/y;
 
 /**
  * Represents the different kinds of packets that can be parsed
@@ -110,28 +110,29 @@ export class Parser implements IterableIterator<Packet> {
    * @returns {IteratorResult<Packet>} The next parsed packet
    */
   public next(): IteratorResult<Packet> {
-    const remaining = this.input.substring(this.lastIndex);
-    const len = remaining.length;
+    const { input } = this;
+    const start = this.lastIndex;
+    const len = input.length - start;
 
     // close iterator
     if (len === 0) return { value: null, done: true };
 
     const pkt = { kind: PacketKind.UNSET, text: '', url: '' };
-    const pos = remaining.indexOf('\x1b');
+    const pos = input.indexOf('\x1b', start);
 
     // most common case, no ESC codes
     if (pos === -1) {
       pkt.kind = PacketKind.Text;
-      pkt.text = remaining;
-      this.lastIndex += len;
+      pkt.text = input.slice(start);
+      this.lastIndex = input.length;
       return { value: pkt, done: false };
     }
 
     // escape code is further ahead
-    if (pos > 0) {
+    if (pos > start) {
       pkt.kind = PacketKind.Text;
-      pkt.text = remaining.slice(0, pos);
-      this.lastIndex += pos;
+      pkt.text = input.slice(start, pos);
+      this.lastIndex = pos;
       return { value: pkt, done: false };
     }
 
@@ -141,19 +142,20 @@ export class Parser implements IterableIterator<Packet> {
     }
 
     // handle escapes
-    const nextChar = remaining.charAt(1);
+    const nextChar = input.charAt(start + 1);
 
     // single ESC
     if ((nextChar !== '[') && (nextChar !== ']') && (nextChar !== '(')) {
       pkt.kind = PacketKind.ESC;
-      pkt.text = remaining[0];
+      pkt.text = '\x1b';
       this.lastIndex += 1;
       return { value: pkt, done: false };
     }
 
     // handle SGR
     if (nextChar === '[') {
-      const match = remaining.match(csiRegex);
+      csiRegex.lastIndex = start;
+      const match = csiRegex.exec(input);
 
       // This match is guaranteed to terminate (even on
       // invalid input). The key is to match on legal and
@@ -178,7 +180,7 @@ export class Parser implements IterableIterator<Packet> {
       if (match[4]) {
         // Illegal sequence, just remove the ESC
         pkt.kind = PacketKind.ESC;
-        pkt.text = remaining[0];
+        pkt.text = '\x1b';
         this.lastIndex += 1;
         return { value: pkt, done: false };
       }
@@ -200,17 +202,18 @@ export class Parser implements IterableIterator<Packet> {
       if (len < 4) return { value: null, done: true };
 
       // only OSC 8 (hyperlinks) is supported
-      if (remaining.charAt(2) !== '8' || remaining.charAt(3) !== ';') {
+      if (input.charAt(start + 2) !== '8' || input.charAt(start + 3) !== ';') {
         // This is not a match, so we'll just treat it as ESC
         pkt.kind = PacketKind.ESC;
-        pkt.text = remaining[0];
+        pkt.text = '\x1b';
         this.lastIndex += 1;
         return { value: pkt, done: false };
       }
 
       // Same approach as CSI: the first alternate matches a legal sequence,
       // the second an illegal one, and no match means the sequence is incomplete.
-      const match = remaining.match(oscRegex);
+      oscRegex.lastIndex = start;
+      const match = oscRegex.exec(input);
 
       if (match === null) return { value: null, done: true };
 
@@ -222,7 +225,7 @@ export class Parser implements IterableIterator<Packet> {
       if (match[2]) {
         // Illegal sequence, just remove the ESC
         pkt.kind = PacketKind.ESC;
-        pkt.text = remaining[0];
+        pkt.text = '\x1b';
         this.lastIndex += 1;
         return { value: pkt, done: false };
       }
