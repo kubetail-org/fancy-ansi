@@ -58,7 +58,7 @@ request. **Held by review** means it is true today and nothing stops the next ch
 | A `SECURITY.md` that points to the private reporting channel, linked from the README | `SECURITY.md`, `README.md` | **Held by review** |
 | An unterminated sequence keeps the text after it | `src/parse.ts` | **Enforced** — `keeps the tail of an unterminated sequence: %j`, `drops only the ESC from %s` ([P-2](security/2026-10-20-threat-model.md#low)) |
 | Parsing time is linear in input length | `src/parse.ts` | **Enforced** for the known case — `parses repeated unterminated OSCs in linear time` pins the fix for [P-1](security/2026-10-20-threat-model.md#medium); CSI, `stripAnsi` and `hasAnsi` measured linear |
-| Output size is bounded relative to input | `src/main.ts` | **Not built** — up to 95× (377 bytes per 4-byte SGR) ([R-1](security/2026-10-20-threat-model.md#low)) |
+| Output size is bounded relative to input | `src/main.ts` | **Not built** — each text run after an SGR re-emits the full style ([R-1](security/2026-10-20-threat-model.md#low)) |
 | A release passes lint, coverage and build for its own commit and uses SHA-pinned actions | `.github/workflows/publish.yml` | **Held by review** — nothing fails if a step or pin is removed ([X-1](security/2026-10-20-threat-model.md#medium)) |
 | Only maintainers can tag, CI is required on `main`, and publishing waits for environment approval | GitHub rulesets, `npm` environment | **Not built** — repository settings, outside the code ([X-1](security/2026-10-20-threat-model.md#medium)) |
 

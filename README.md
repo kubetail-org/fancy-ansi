@@ -123,7 +123,7 @@ Links have no inline styles, so your page's CSS decides how they look. SGR codes
 
 ## Output size
 
-`toHtml()` output can be up to 95× the size of its input. Each SGR sequence closes the current `<span>` and opens a new one with the full style, even when the style did not change. A 4-byte sequence such as `\x1b[1m` can emit up to 377 bytes.
+`toHtml()` output can be many times the size of its input. Each run of text after an SGR sequence gets a new `<span>` with the full style, even when the style did not change. A 5-byte input such as `\x1b[1mx` can emit hundreds of bytes.
 
 Conversion is fast, but inserting a large result into the DOM can freeze the page. If you render input you don't control, cap its length per call. If you render logs, convert one line at a time.
 

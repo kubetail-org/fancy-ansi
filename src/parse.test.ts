@@ -73,6 +73,14 @@ describe('parse', () => {
     expect(packets[0].kind).toEqual(PacketKind.Unknown);
   });
 
+  it.each([
+    ['private-mode char', '\x1b[?1m'],
+    ['intermediate', '\x1b[1 m'],
+  ])('returns packet of kind `Unknown` for an m command with a %s', (_, input) => {
+    const packets = parse(`${input}x`);
+    expect(packets.map((p) => p.kind)).toEqual([PacketKind.Unknown, PacketKind.Text]);
+  });
+
   it('returns three packets for escape code betwen text', () => {
     const packets = parse('before\x1b[0mafter');
     expect(packets.length).toEqual(3);

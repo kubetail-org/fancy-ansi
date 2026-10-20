@@ -52,6 +52,20 @@ nameMap[StyleAttrsKeys.Visibility] = 'visibility';
  */
 export type StyleAttrsModifierFn = (attrs: StyleAttrs) => void;
 
+// Caches a list edit per current value. The cache grows with the number of
+// distinct values the key takes, which is small for text-decoration.
+function memoize(edit: (currVal: string | undefined) => string) {
+  const cache = new Map<string | undefined, string>();
+  return (currVal: string | undefined) => {
+    let newVal = cache.get(currVal);
+    if (newVal === undefined) {
+      newVal = edit(currVal);
+      cache.set(currVal, newVal);
+    }
+    return newVal;
+  };
+}
+
 /**
  * Represents style attributes holder
  */
@@ -150,11 +164,13 @@ export class StyleAttrs {
    * @returns {StyleAttrsModifierFn} Modifier function
    */
   static appendVal(key: StyleAttrsKeys, value: string): StyleAttrsModifierFn {
-    return (attrs) => {
-      const currVal = attrs.get(key);
+    const next = memoize((currVal) => {
       const vals = (currVal) ? currVal.split(' ') : [];
       if (!vals.includes(value)) vals.push(value);
-      attrs.set(key, vals.join(' '));
+      return vals.join(' ');
+    });
+    return (attrs) => {
+      attrs.set(key, next(attrs.get(key)));
     };
   }
 
@@ -165,12 +181,13 @@ export class StyleAttrs {
    * @returns {StyleAttrsModifierFn} Modifier function
    */
   static removeVal(key: StyleAttrsKeys, value: string): StyleAttrsModifierFn {
+    const next = memoize((currVal) => (
+      (currVal) ? currVal.split(' ').filter((x) => x !== value).join(' ') : ''
+    ));
     return (attrs) => {
-      const currVal = attrs.get(key);
-      let vals = (currVal) ? currVal.split(' ') : [];
-      vals = vals.filter((x) => x !== value);
-      if (!vals.length) attrs.delete(key);
-      else attrs.set(key, vals.join(' '));
+      const newVal = next(attrs.get(key));
+      if (newVal) attrs.set(key, newVal);
+      else attrs.delete(key);
     };
   }
 }
