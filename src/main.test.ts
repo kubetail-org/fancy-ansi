@@ -94,8 +94,18 @@ describe('FancyAnsi', () => {
   it('emits no style-less span after a repeated code is reset', () => {
     const fancyAnsi = new FancyAnsi();
     const output = fancyAnsi.toHtml('\x1b[31m\x1b[31m\x1b[39mx');
-    expect(output).not.toContain('style=""');
-    expect(output.endsWith('</span>x')).toBe(true);
+    expect(output).toEqual('x');
+  });
+
+  it('emits no span for trailing styles', () => {
+    const fancyAnsi = new FancyAnsi();
+    expect(fancyAnsi.toHtml('x\x1b[31m')).toEqual('x');
+  });
+
+  it('emits one span for adjacent SGR sequences', () => {
+    const fancyAnsi = new FancyAnsi();
+    const output = fancyAnsi.toHtml('\x1b[1m\x1b[3mx\x1b[23m\x1b[22m');
+    expect(output).toEqual('<span style="font-style:italic;font-weight:var(--ansi-bold-font-weight, 600);">x</span>');
   });
 
   it('supports 256-color standard colors', () => {

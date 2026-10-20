@@ -287,8 +287,10 @@ export class FancyAnsi {
     let inSpan = false;
     let inLink = false;
 
+    // Spans open on the next text packet, so adjacent SGR packets and trailing
+    // styles don't leave empty spans behind.
     const openSpan = () => {
-      if (!attrs.size) return;
+      if (inSpan || !attrs.size) return;
       buffer += `<span style="${attrs.toString()}">`;
       inSpan = true;
     };
@@ -303,12 +305,12 @@ export class FancyAnsi {
     for (const packet of new Parser(input)) {
       switch (packet.kind) {
         case PacketKind.Text:
+          openSpan();
           buffer += escape(packet.text);
           break;
         case PacketKind.SGR:
           closeSpan();
           processSGRPacket(packet, attrs);
-          openSpan();
           break;
         case PacketKind.OSCURL: {
           if (!this.linkAttrs) break;
@@ -317,12 +319,11 @@ export class FancyAnsi {
           const url = isHttpUrl(packet.url) ? packet.url : '';
           if (!url && !inLink) break;
 
-          // spans nest inside links, so reopen the current style inside the new link
+          // spans nest inside links, so the next text reopens the style inside the new link
           closeSpan();
           if (inLink) buffer += '</a>';
           if (url) buffer += `<a href="${escape(url)}"${this.linkAttrs}>`;
           inLink = url !== '';
-          openSpan();
           break;
         }
         default:
