@@ -29,11 +29,12 @@ Three boundaries, in the order an attacker meets them:
 2. **Consumer → HTML.** `hyperlinks.target` and `hyperlinks.className` are escaped. The consumer
    is trusted to choose them, but the escaping holds even if they don't. The `rel` attribute is
    fixed. The consumer's own CSS variables (`--ansi-*`) are trusted.
-3. **Repository → npm.** Any tag publishes through `publish.yml` with npm trusted publishing
-   (OIDC, `id-token: write`), and the registry records a provenance attestation. The job builds
-   from the tagged commit. It does not run lint or tests, and it is not gated on CI. `main`
-   requires one approving review, signed commits and the DCO check; the CI jobs are not required,
-   and no ruleset covers tags. The only runtime dependency is `escape-html`. `ansi-regex` and the
+3. **Repository → npm.** A `v*` tag publishes through `publish.yml` with npm trusted publishing
+   (OIDC, `id-token: write`), and the registry records a provenance attestation. The job runs in
+   the `npm` environment with SHA-pinned actions. It runs lint, coverage and build on the tagged
+   commit before publishing. `main` requires one approving review, signed commits and the DCO
+   check. Required CI checks, a `v*` tag ruleset and the `npm` environment's reviewers are repository
+   settings, not code. The only runtime dependency is `escape-html`. `ansi-regex` and the
    parser regexes are vendored. Development dependencies run during the release build, pinned by
    the lockfile.
 
@@ -56,7 +57,8 @@ request. **Held by review** means it is true today and nothing stops the next ch
 | Emitted tags are balanced: spans never nest, and a span is closed before a link opens or closes | `src/main.ts` (`toHtml`) | **Held by review** — fuzzed with 100,000 inputs in the latest review; the alphabet test does not check nesting |
 | Parsing time is linear in input length | `src/parse.ts` | **Not built** — CSI, `stripAnsi` and `hasAnsi` measured linear; `oscRegex`'s illegal branch is quadratic within a run without control characters ([P-1](security/2026-10-20-threat-model.md#medium)) |
 | Output size is bounded relative to input | `src/main.ts` | **Not built** — up to 95× (377 bytes per 4-byte SGR) ([R-1](security/2026-10-20-threat-model.md#low)) |
-| A release passes lint, coverage and build for its own commit, uses SHA-pinned actions, and only maintainers can tag | `.github/workflows/publish.yml`, GitHub rulesets | **Not built** ([X-1](security/2026-10-20-threat-model.md#medium)) |
+| A release passes lint, coverage and build for its own commit and uses SHA-pinned actions | `.github/workflows/publish.yml` | **Held by review** — nothing fails if a step or pin is removed ([X-1](security/2026-10-20-threat-model.md#medium)) |
+| Only maintainers can tag, CI is required on `main`, and publishing waits for environment approval | GitHub rulesets, `npm` environment | **Not built** — repository settings, outside the code ([X-1](security/2026-10-20-threat-model.md#medium)) |
 | A `SECURITY.md` that points to the private reporting channel | — | **Not built** — GitHub private vulnerability reporting is enabled but unadvertised ([X-2](security/2026-10-20-threat-model.md#low)) |
 
 ## What the library does not do

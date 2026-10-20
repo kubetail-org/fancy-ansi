@@ -3,22 +3,25 @@ name: publish
 on:
   push:
     tags:
-      - '**'
+      - 'v*'
 
 jobs:
   publish:
     if: github.repository == 'kubetail-org/fancy-ansi'
     runs-on: ubuntu-latest
+    environment: npm
     permissions:
       contents: read
       id-token: write # npm trusted publishing
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version-file: .node-version
-      - uses: pnpm/action-setup@v6
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
       - run: pnpm install
+      - run: pnpm lint
+      - run: pnpm coverage
       - run: pnpm build
       # The tag is the source of truth for the version (e.g. v1.2.3, v1.2.3-rc1)
       - run: npm version "${GITHUB_REF_NAME#v}" --no-git-tag-version --allow-same-version
