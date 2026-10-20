@@ -444,6 +444,12 @@ pnpm build
 
 The production files will be located in the `dist/` directory.
 
+## Security
+
+Report vulnerabilities privately through
+[GitHub private vulnerability reporting](https://github.com/kubetail-org/fancy-ansi/security/advisories/new).
+See [SECURITY.md](https://github.com/kubetail-org/fancy-ansi/blob/main/SECURITY.md) for the supported versions.
+
 ## Acknowledgements
 
 * The ANSI parsing code is from [ansi_up](https://github.com/drudru/ansi_up)

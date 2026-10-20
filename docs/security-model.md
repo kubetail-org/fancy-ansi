@@ -55,11 +55,11 @@ request. **Held by review** means it is true today and nothing stops the next ch
 | Link URLs and consumer link options are attribute-escaped; `rel="noopener noreferrer nofollow"` is fixed | `src/main.ts` (`linkAttrs`) | **Enforced** — `escapes quotes and special characters in link urls`, and the random-input test with hostile `target`/`className` |
 | `AnsiHtml` renders only `<span style>` and safe `<a>` elements | `src/react.tsx` | **Enforced** — `renders untrusted input as text and styled spans`, `renders untrusted hyperlinks as safe links` |
 | Emitted tags are balanced: spans never nest, and a span is closed before a link opens or closes | `src/main.ts` (`toHtml`) | **Held by review** — fuzzed with 100,000 inputs in the latest review; the alphabet test does not check nesting |
+| A `SECURITY.md` that points to the private reporting channel, linked from the README | `SECURITY.md`, `README.md` | **Held by review** |
 | Parsing time is linear in input length | `src/parse.ts` | **Not built** — CSI, `stripAnsi` and `hasAnsi` measured linear; `oscRegex`'s illegal branch is quadratic within a run without control characters ([P-1](security/2026-10-20-threat-model.md#medium)) |
 | Output size is bounded relative to input | `src/main.ts` | **Not built** — up to 95× (377 bytes per 4-byte SGR) ([R-1](security/2026-10-20-threat-model.md#low)) |
 | A release passes lint, coverage and build for its own commit and uses SHA-pinned actions | `.github/workflows/publish.yml` | **Held by review** — nothing fails if a step or pin is removed ([X-1](security/2026-10-20-threat-model.md#medium)) |
 | Only maintainers can tag, CI is required on `main`, and publishing waits for environment approval | GitHub rulesets, `npm` environment | **Not built** — repository settings, outside the code ([X-1](security/2026-10-20-threat-model.md#medium)) |
-| A `SECURITY.md` that points to the private reporting channel | — | **Not built** — GitHub private vulnerability reporting is enabled but unadvertised ([X-2](security/2026-10-20-threat-model.md#low)) |
 
 ## What the library does not do
 
