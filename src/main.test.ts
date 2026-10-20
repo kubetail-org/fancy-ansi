@@ -81,6 +81,16 @@ describe('FancyAnsi', () => {
     expect(output).toEqual('<span style="text-decoration:underline line-through;">x</span><span style="text-decoration:line-through;">y</span>z');
   });
 
+  it('supports double underline, superscript and subscript', () => {
+    const fancyAnsi = new FancyAnsi();
+    const output = fancyAnsi.toHtml('\x1b[21mx\x1b[0;73my\x1b[74mz');
+    expect(output).toEqual(
+      '<span style="text-decoration-line:underline;text-decoration-style:double;">x</span>'
+      + '<span style="font-size:var(--ansi-superscript-font-size, 80%);vertical-align:super;">y</span>'
+      + '<span style="font-size:var(--ansi-subscript-font-size, 80%);vertical-align:sub;">z</span>',
+    );
+  });
+
   it('emits no style-less span after a repeated code is reset', () => {
     const fancyAnsi = new FancyAnsi();
     const output = fancyAnsi.toHtml('\x1b[31m\x1b[31m\x1b[39mx');

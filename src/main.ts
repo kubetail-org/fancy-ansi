@@ -18,77 +18,10 @@ import AnsiRegex from '@/ansi-regex';
 import { StandardColorKeys, xtermjs } from '@/colors';
 import { Packet, PacketKind, Parser } from '@/parse';
 import { StyleAttrs, StyleAttrsKeys } from '@/style-attrs';
-import type { StyleAttrsDict, StyleAttrsModifierFn } from '@/style-attrs';
+import type { StyleAttrsModifierFn } from '@/style-attrs';
 
 const ansiRegex = AnsiRegex();
 const hasAnsiRegex = AnsiRegex({ onlyFirst: true });
-
-const styleAttrsMap = new Array<StyleAttrsDict | StyleAttrsModifierFn | undefined>(108);
-styleAttrsMap[0] = { [StyleAttrsKeys.FontWeight]: 'var(--ansi-bold-font-weight, 600)' };
-styleAttrsMap[1] = { [StyleAttrsKeys.FontWeight]: 'var(--ansi-bold-font-weight, 600)' };
-styleAttrsMap[2] = { [StyleAttrsKeys.Opacity]: 'var(--ansi-dim-opacity, 0.7)' };
-styleAttrsMap[3] = { [StyleAttrsKeys.FontStyle]: 'italic' };
-styleAttrsMap[4] = StyleAttrs.appendVal(StyleAttrsKeys.TextDecoration, 'underline');
-styleAttrsMap[8] = { [StyleAttrsKeys.Visibility]: 'hidden' };
-styleAttrsMap[9] = StyleAttrs.appendVal(StyleAttrsKeys.TextDecoration, 'line-through');
-styleAttrsMap[10] = StyleAttrs.delete(StyleAttrsKeys.FontFamily);
-styleAttrsMap[11] = { [StyleAttrsKeys.FontFamily]: 'var(--ansi-font-1)' };
-styleAttrsMap[12] = { [StyleAttrsKeys.FontFamily]: 'var(--ansi-font-2)' };
-styleAttrsMap[13] = { [StyleAttrsKeys.FontFamily]: 'var(--ansi-font-3)' };
-styleAttrsMap[14] = { [StyleAttrsKeys.FontFamily]: 'var(--ansi-font-4)' };
-styleAttrsMap[15] = { [StyleAttrsKeys.FontFamily]: 'var(--ansi-font-5)' };
-styleAttrsMap[16] = { [StyleAttrsKeys.FontFamily]: 'var(--ansi-font-6)' };
-styleAttrsMap[17] = { [StyleAttrsKeys.FontFamily]: 'var(--ansi-font-7)' };
-styleAttrsMap[18] = { [StyleAttrsKeys.FontFamily]: 'var(--ansi-font-8)' };
-styleAttrsMap[19] = { [StyleAttrsKeys.FontFamily]: 'var(--ansi-font-9)' };
-styleAttrsMap[21] = { [StyleAttrsKeys.TextDecorationLine]: 'underline', [StyleAttrsKeys.TextDecorationStyle]: 'double' };
-styleAttrsMap[22] = StyleAttrs.delete(StyleAttrsKeys.FontWeight);
-styleAttrsMap[23] = StyleAttrs.delete(StyleAttrsKeys.FontStyle);
-styleAttrsMap[24] = StyleAttrs.removeVal(StyleAttrsKeys.TextDecoration, 'underline');
-styleAttrsMap[28] = StyleAttrs.delete(StyleAttrsKeys.Visibility);
-styleAttrsMap[29] = StyleAttrs.removeVal(StyleAttrsKeys.TextDecoration, 'line-through');
-styleAttrsMap[30] = { [StyleAttrsKeys.Color]: `var(--ansi-black, ${xtermjs[StandardColorKeys.Black]})` };
-styleAttrsMap[31] = { [StyleAttrsKeys.Color]: `var(--ansi-red, ${xtermjs[StandardColorKeys.Red]})` };
-styleAttrsMap[32] = { [StyleAttrsKeys.Color]: `var(--ansi-green, ${xtermjs[StandardColorKeys.Green]})` };
-styleAttrsMap[33] = { [StyleAttrsKeys.Color]: `var(--ansi-yellow, ${xtermjs[StandardColorKeys.Yellow]})` };
-styleAttrsMap[34] = { [StyleAttrsKeys.Color]: `var(--ansi-blue, ${xtermjs[StandardColorKeys.Blue]})` };
-styleAttrsMap[35] = { [StyleAttrsKeys.Color]: `var(--ansi-magenta, ${xtermjs[StandardColorKeys.Magenta]})` };
-styleAttrsMap[36] = { [StyleAttrsKeys.Color]: `var(--ansi-cyan, ${xtermjs[StandardColorKeys.Cyan]})` };
-styleAttrsMap[37] = { [StyleAttrsKeys.Color]: `var(--ansi-white, ${xtermjs[StandardColorKeys.White]})` };
-styleAttrsMap[39] = StyleAttrs.delete(StyleAttrsKeys.Color);
-styleAttrsMap[40] = { [StyleAttrsKeys.BackgroundColor]: `var(--ansi-black, ${xtermjs[StandardColorKeys.Black]})` };
-styleAttrsMap[41] = { [StyleAttrsKeys.BackgroundColor]: `var(--ansi-red, ${xtermjs[StandardColorKeys.Red]})` };
-styleAttrsMap[42] = { [StyleAttrsKeys.BackgroundColor]: `var(--ansi-green, ${xtermjs[StandardColorKeys.Green]})` };
-styleAttrsMap[43] = { [StyleAttrsKeys.BackgroundColor]: `var(--ansi-yellow, ${xtermjs[StandardColorKeys.Yellow]})` };
-styleAttrsMap[44] = { [StyleAttrsKeys.BackgroundColor]: `var(--ansi-blue, ${xtermjs[StandardColorKeys.Blue]})` };
-styleAttrsMap[45] = { [StyleAttrsKeys.BackgroundColor]: `var(--ansi-magenta, ${xtermjs[StandardColorKeys.Magenta]})` };
-styleAttrsMap[46] = { [StyleAttrsKeys.BackgroundColor]: `var(--ansi-cyan, ${xtermjs[StandardColorKeys.Cyan]})` };
-styleAttrsMap[47] = { [StyleAttrsKeys.BackgroundColor]: `var(--ansi-white, ${xtermjs[StandardColorKeys.White]})` };
-styleAttrsMap[49] = StyleAttrs.delete(StyleAttrsKeys.BackgroundColor);
-styleAttrsMap[51] = { [StyleAttrsKeys.Outline]: 'var(--ansi-frame-outline, 1px solid)' };
-styleAttrsMap[53] = StyleAttrs.appendVal(StyleAttrsKeys.TextDecoration, 'overline');
-styleAttrsMap[54] = StyleAttrs.delete(StyleAttrsKeys.Outline);
-styleAttrsMap[55] = StyleAttrs.removeVal(StyleAttrsKeys.TextDecoration, 'overline');
-styleAttrsMap[59] = StyleAttrs.delete(StyleAttrsKeys.TextDecorationColor);
-styleAttrsMap[73] = { [StyleAttrsKeys.VerticalAlign]: 'super', [StyleAttrsKeys.FontSize]: 'var(--ansi-superscript-font-size, 80%)' };
-styleAttrsMap[74] = { [StyleAttrsKeys.VerticalAlign]: 'sub', [StyleAttrsKeys.FontSize]: 'var(--ansi-subscript-font-size, 80%)' };
-styleAttrsMap[75] = StyleAttrs.delete(StyleAttrsKeys.VerticalAlign, StyleAttrsKeys.FontSize);
-styleAttrsMap[90] = { [StyleAttrsKeys.Color]: `var(--ansi-bright-black, ${xtermjs[StandardColorKeys.BrightBlack]})` };
-styleAttrsMap[91] = { [StyleAttrsKeys.Color]: `var(--ansi-bright-red, ${xtermjs[StandardColorKeys.BrightRed]})` };
-styleAttrsMap[92] = { [StyleAttrsKeys.Color]: `var(--ansi-bright-green, ${xtermjs[StandardColorKeys.BrightGreen]})` };
-styleAttrsMap[93] = { [StyleAttrsKeys.Color]: `var(--ansi-bright-yellow, ${xtermjs[StandardColorKeys.BrightYellow]})` };
-styleAttrsMap[94] = { [StyleAttrsKeys.Color]: `var(--ansi-bright-blue, ${xtermjs[StandardColorKeys.BrightBlue]})` };
-styleAttrsMap[95] = { [StyleAttrsKeys.Color]: `var(--ansi-bright-magenta, ${xtermjs[StandardColorKeys.BrightMagenta]})` };
-styleAttrsMap[96] = { [StyleAttrsKeys.Color]: `var(--ansi-bright-cyan, ${xtermjs[StandardColorKeys.BrightCyan]})` };
-styleAttrsMap[97] = { [StyleAttrsKeys.Color]: `var(--ansi-bright-white, ${xtermjs[StandardColorKeys.BrightWhite]})` };
-styleAttrsMap[100] = { [StyleAttrsKeys.BackgroundColor]: `var(--ansi-bright-black, ${xtermjs[StandardColorKeys.BrightBlack]})` };
-styleAttrsMap[101] = { [StyleAttrsKeys.BackgroundColor]: `var(--ansi-bright-red, ${xtermjs[StandardColorKeys.BrightRed]})` };
-styleAttrsMap[102] = { [StyleAttrsKeys.BackgroundColor]: `var(--ansi-bright-green, ${xtermjs[StandardColorKeys.BrightGreen]})` };
-styleAttrsMap[103] = { [StyleAttrsKeys.BackgroundColor]: `var(--ansi-bright-yellow, ${xtermjs[StandardColorKeys.BrightYellow]})` };
-styleAttrsMap[104] = { [StyleAttrsKeys.BackgroundColor]: `var(--ansi-bright-blue, ${xtermjs[StandardColorKeys.BrightBlue]})` };
-styleAttrsMap[105] = { [StyleAttrsKeys.BackgroundColor]: `var(--ansi-bright-magenta, ${xtermjs[StandardColorKeys.BrightMagenta]})` };
-styleAttrsMap[106] = { [StyleAttrsKeys.BackgroundColor]: `var(--ansi-bright-cyan, ${xtermjs[StandardColorKeys.BrightCyan]})` };
-styleAttrsMap[107] = { [StyleAttrsKeys.BackgroundColor]: `var(--ansi-bright-white, ${xtermjs[StandardColorKeys.BrightWhite]})` };
 
 const codeMap = new Array<StandardColorKeys>(16);
 codeMap[0] = StandardColorKeys.Black;
@@ -107,9 +40,6 @@ codeMap[12] = StandardColorKeys.BrightBlue;
 codeMap[13] = StandardColorKeys.BrightMagenta;
 codeMap[14] = StandardColorKeys.BrightCyan;
 codeMap[15] = StandardColorKeys.BrightWhite;
-
-const SEMICOLON = 59; // ';'
-const ZERO = 48; // '0'
 
 const palette256 = new Array<string>(256);
 for (let i = 0; i < 16; i += 1) {
@@ -130,6 +60,53 @@ for (let i = 0; i < 24; i += 1) {
   palette256[232 + i] = `var(--ansi-gray-${24 - i}, rgb(${c},${c},${c}))`;
 }
 
+// SGR code -> style attributes modifier (code 0 is handled in applySGRCode)
+const styleAttrsMap = new Array<StyleAttrsModifierFn | undefined>(108);
+styleAttrsMap[1] = StyleAttrs.setVal(StyleAttrsKeys.FontWeight, 'var(--ansi-bold-font-weight, 600)');
+styleAttrsMap[2] = StyleAttrs.setVal(StyleAttrsKeys.Opacity, 'var(--ansi-dim-opacity, 0.7)');
+styleAttrsMap[3] = StyleAttrs.setVal(StyleAttrsKeys.FontStyle, 'italic');
+styleAttrsMap[4] = StyleAttrs.appendVal(StyleAttrsKeys.TextDecoration, 'underline');
+styleAttrsMap[8] = StyleAttrs.setVal(StyleAttrsKeys.Visibility, 'hidden');
+styleAttrsMap[9] = StyleAttrs.appendVal(StyleAttrsKeys.TextDecoration, 'line-through');
+styleAttrsMap[10] = StyleAttrs.delete(StyleAttrsKeys.FontFamily);
+for (let i = 1; i <= 9; i += 1) {
+  styleAttrsMap[10 + i] = StyleAttrs.setVal(StyleAttrsKeys.FontFamily, `var(--ansi-font-${i})`);
+}
+styleAttrsMap[21] = (attrs) => {
+  attrs.set(StyleAttrsKeys.TextDecorationLine, 'underline');
+  attrs.set(StyleAttrsKeys.TextDecorationStyle, 'double');
+};
+styleAttrsMap[22] = StyleAttrs.delete(StyleAttrsKeys.FontWeight);
+styleAttrsMap[23] = StyleAttrs.delete(StyleAttrsKeys.FontStyle);
+styleAttrsMap[24] = StyleAttrs.removeVal(StyleAttrsKeys.TextDecoration, 'underline');
+styleAttrsMap[28] = StyleAttrs.delete(StyleAttrsKeys.Visibility);
+styleAttrsMap[29] = StyleAttrs.removeVal(StyleAttrsKeys.TextDecoration, 'line-through');
+for (let i = 0; i < 8; i += 1) {
+  styleAttrsMap[30 + i] = StyleAttrs.setVal(StyleAttrsKeys.Color, palette256[i]);
+  styleAttrsMap[40 + i] = StyleAttrs.setVal(StyleAttrsKeys.BackgroundColor, palette256[i]);
+  styleAttrsMap[90 + i] = StyleAttrs.setVal(StyleAttrsKeys.Color, palette256[8 + i]);
+  styleAttrsMap[100 + i] = StyleAttrs.setVal(StyleAttrsKeys.BackgroundColor, palette256[8 + i]);
+}
+styleAttrsMap[39] = StyleAttrs.delete(StyleAttrsKeys.Color);
+styleAttrsMap[49] = StyleAttrs.delete(StyleAttrsKeys.BackgroundColor);
+styleAttrsMap[51] = StyleAttrs.setVal(StyleAttrsKeys.Outline, 'var(--ansi-frame-outline, 1px solid)');
+styleAttrsMap[53] = StyleAttrs.appendVal(StyleAttrsKeys.TextDecoration, 'overline');
+styleAttrsMap[54] = StyleAttrs.delete(StyleAttrsKeys.Outline);
+styleAttrsMap[55] = StyleAttrs.removeVal(StyleAttrsKeys.TextDecoration, 'overline');
+styleAttrsMap[59] = StyleAttrs.delete(StyleAttrsKeys.TextDecorationColor);
+styleAttrsMap[73] = (attrs) => {
+  attrs.set(StyleAttrsKeys.VerticalAlign, 'super');
+  attrs.set(StyleAttrsKeys.FontSize, 'var(--ansi-superscript-font-size, 80%)');
+};
+styleAttrsMap[74] = (attrs) => {
+  attrs.set(StyleAttrsKeys.VerticalAlign, 'sub');
+  attrs.set(StyleAttrsKeys.FontSize, 'var(--ansi-subscript-font-size, 80%)');
+};
+styleAttrsMap[75] = StyleAttrs.delete(StyleAttrsKeys.VerticalAlign, StyleAttrsKeys.FontSize);
+
+const SEMICOLON = 59; // ';'
+const ZERO = 48; // '0'
+
 /**
  * Apply one SGR code to style attributes
  * @param {number} code - The SGR code
@@ -142,13 +119,7 @@ function applySGRCode(code: number, attrs: StyleAttrs) {
     return;
   }
 
-  // get attribute modifier
-  const newAttrsOrModifierFn = styleAttrsMap[code];
-  if (!newAttrsOrModifierFn) return;
-
-  // update attrs
-  if (typeof newAttrsOrModifierFn === 'function') newAttrsOrModifierFn(attrs);
-  else attrs.update(newAttrsOrModifierFn);
+  styleAttrsMap[code]?.(attrs);
 }
 
 /**
