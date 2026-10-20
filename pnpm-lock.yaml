@@ -173,8 +173,8 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0(@base-ui/react@1.9.0(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(lucide-react@1.59.0(@types/react@19.3.0)(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(tailwindcss@4.3.3)
       fancy-ansi:
-        specifier: ^0.2.0
-        version: 0.2.0(tailwindcss@4.3.3)
+        specifier: ^0.2.1
+        version: 0.2.1(tailwindcss@4.3.3)
       lucide-react:
         specifier: ^1.59.0
         version: 1.59.0(@types/react@19.3.0)(react@19.3.1)
@@ -1343,8 +1343,8 @@ packages:
     resolution: {integrity: sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==}
     engines: {node: '>=0.10.0'}
 
-  fancy-ansi@0.2.0:
-    resolution: {integrity: sha512-ZGEmjpubAea0oCfCDn7OVy/CTS7h9xCixnhRvOcSWvdmpRGtARwK7+9wCLgM6ovLmVao2Hrrhm/JzHS2VyKfPg==}
+  fancy-ansi@0.2.1:
+    resolution: {integrity: sha512-JpJ5XzWH0mzqxV7JtT9ULiA0dQMR/FTuaWy8H+xBYxXDOrVYUOiBMR8Lunuo/o1n1k7cUYrCNxqBskZOE2Gw3w==}
     peerDependencies:
       tailwindcss: ^3 || ^4
     peerDependenciesMeta:
@@ -3566,7 +3566,7 @@ snapshots:
 
   esutils@2.0.3: {}
 
-  fancy-ansi@0.2.0(tailwindcss@4.3.3):
+  fancy-ansi@0.2.1(tailwindcss@4.3.3):
     dependencies:
       escape-html: 1.0.3
     optionalDependencies:
