@@ -213,6 +213,11 @@ describe('hasAnsi', () => {
     const result = hasAnsi('\x1b[10;5H');
     expect(result).toEqual(true);
   });
+
+  it('returns true when there is an 8-bit CSI code', () => {
+    const result = hasAnsi('\x9b0m');
+    expect(result).toEqual(true);
+  });
 });
 
 describe('stripAnsi', () => {
@@ -233,6 +238,11 @@ describe('stripAnsi', () => {
 
   it('returns string without escape codes', () => {
     const result = stripAnsi('one\x1b[1mtwo\x1b[0mthree');
+    expect(result).toEqual('onetwothree');
+  });
+
+  it('strips 8-bit CSI codes', () => {
+    const result = stripAnsi('one\x9b1mtwo\x9b0mthree');
     expect(result).toEqual('onetwothree');
   });
 
