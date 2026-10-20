@@ -214,10 +214,58 @@ export function stripAnsi(input: string): string {
   return input.replaceAll(ansiRegex, '');
 }
 
+// Only http(s) URLs become links; `javascript:`, `data:` and relative URLs don't
+function isHttpUrl(url: string): boolean {
+  try {
+    const { protocol } = new URL(url);
+    return protocol === 'http:' || protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Options for rendering OSC 8 hyperlinks
+ */
+export type HyperlinkOptions = {
+  /** Value of the `target` attribute */
+  target?: string;
+  /** Value of the `class` attribute */
+  className?: string;
+};
+
+/**
+ * Options for the FancyAnsi converter
+ */
+export type FancyAnsiOptions = {
+  /**
+   * Render OSC 8 hyperlinks as `<a>` tags. Off by default because the URL
+   * comes from the input.
+   */
+  hyperlinks?: boolean | HyperlinkOptions;
+};
+
+// Attributes shared by every `<a>` tag. `rel` is fixed; the consumer picks the rest.
+function linkAttrs({ target, className }: HyperlinkOptions): string {
+  let attrs = ' rel="noopener noreferrer nofollow"';
+  if (target) attrs += ` target="${escape(target)}"`;
+  if (className) attrs += ` class="${escape(className)}"`;
+  return attrs;
+}
+
 /**
  * Represents a configurable ANSI to HTML converter object
  */
 export class FancyAnsi {
+  private readonly linkAttrs?: string;
+
+  /**
+   * @param {FancyAnsiOptions} options - Converter options
+   */
+  constructor({ hyperlinks }: FancyAnsiOptions = {}) {
+    if (hyperlinks) this.linkAttrs = linkAttrs(hyperlinks === true ? {} : hyperlinks);
+  }
+
   /**
    * Convert input string with ansi markup to browser-safe HTML
    * @param {string} input
@@ -226,7 +274,20 @@ export class FancyAnsi {
   public toHtml(input: string): string {
     const attrs: StyleAttrs = new StyleAttrs();
     let buffer = '';
-    let inTag = false;
+    let inSpan = false;
+    let inLink = false;
+
+    const openSpan = () => {
+      if (!attrs.size) return;
+      buffer += `<span style="${attrs.toString()}">`;
+      inSpan = true;
+    };
+
+    const closeSpan = () => {
+      if (!inSpan) return;
+      buffer += '</span>';
+      inSpan = false;
+    };
 
     // iterate through packets
     Array.from(new Parser(input)).forEach((packet) => {
@@ -235,25 +296,33 @@ export class FancyAnsi {
           buffer += escape(packet.text);
           break;
         case PacketKind.SGR:
-          if (inTag) {
-            buffer += '</span>';
-            inTag = false;
-          }
-
+          closeSpan();
           processSGRPacket(packet, attrs);
-
-          if (attrs.size) {
-            buffer += `<span style="${attrs.toString()}">`;
-            inTag = true;
-          }
+          openSpan();
           break;
+        case PacketKind.OSCURL: {
+          if (!this.linkAttrs) break;
+
+          // an unsafe url closes the current link, like an empty one does
+          const url = isHttpUrl(packet.url) ? packet.url : '';
+          if (!url && !inLink) break;
+
+          // spans nest inside links, so reopen the current style inside the new link
+          closeSpan();
+          if (inLink) buffer += '</a>';
+          if (url) buffer += `<a href="${escape(url)}"${this.linkAttrs}>`;
+          inLink = url !== '';
+          openSpan();
+          break;
+        }
         default:
           break;
       }
     });
 
-    // add closing tag if necessary
-    if (inTag) buffer += '</span>';
+    // close open tags
+    closeSpan();
+    if (inLink) buffer += '</a>';
 
     return buffer;
   }

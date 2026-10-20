@@ -14,8 +14,8 @@
 
 import { FancyAnsi, hasAnsi, stripAnsi } from './main';
 
-// Everything `toHtml()` may emit: escaped text and spans with a fixed style alphabet
-const safeHtmlRegex = /^(?:[^<>"'&]|&(?:lt|gt|quot|#39|amp);|<\/span>|<span style="[\w #%(),.:;-]*">)*$/;
+// Everything `toHtml()` may emit: escaped text, spans with a fixed style alphabet and http(s) links
+const safeHtmlRegex = /^(?:[^<>"'&]|&(?:lt|gt|quot|#39|amp);|<\/span>|<span style="[\w #%(),.:;-]*">|<\/a>|<a href="https?:[^<>"']*" rel="noopener noreferrer nofollow"(?: target="[^<>"']*")?(?: class="[^<>"']*")?>)*$/;
 
 // Park-Miller PRNG, so fuzz failures are reproducible
 function prng(seed: number) {
@@ -129,6 +129,72 @@ describe('FancyAnsi', () => {
   });
 });
 
+describe('FancyAnsi with hyperlinks', () => {
+  const fancyAnsi = new FancyAnsi({ hyperlinks: true });
+  const bold = '<span style="font-weight:var(--ansi-bold-font-weight, 600);">';
+  const attrs = 'rel="noopener noreferrer nofollow"';
+
+  it.each([
+    ['see \x1b]8;;https://example.com\x1b\\link text\x1b]8;;\x1b\\ after', `see <a href="https://example.com" ${attrs}>link text</a> after`],
+    ['\x1b]8;id=1;http://example.com/a?b=1&c=2\x07link\x1b]8;;\x07', `<a href="http://example.com/a?b=1&amp;c=2" ${attrs}>link</a>`],
+  ])('renders http(s) links: %j', (input, expected) => {
+    expect(fancyAnsi.toHtml(input)).toEqual(expected);
+  });
+
+  it('nests styles changed inside a link', () => {
+    const output = fancyAnsi.toHtml('\x1b]8;;https://x/\x07a\x1b[1mb\x1b[0mc\x1b]8;;\x07');
+    expect(output).toEqual(`<a href="https://x/" ${attrs}>a${bold}b</span>c</a>`);
+  });
+
+  it('nests a link opened inside styled text', () => {
+    const output = fancyAnsi.toHtml('\x1b[1ma\x1b]8;;https://x/\x07b\x1b]8;;\x07c');
+    expect(output).toEqual(`${bold}a</span><a href="https://x/" ${attrs}>${bold}b</span></a>${bold}c</span>`);
+  });
+
+  it('closes a link at the end of the input', () => {
+    const output = fancyAnsi.toHtml('\x1b]8;;https://x/\x07\x1b[1mb');
+    expect(output).toEqual(`<a href="https://x/" ${attrs}>${bold}b</span></a>`);
+  });
+
+  it('closes a link when a new link opens', () => {
+    const output = fancyAnsi.toHtml('\x1b]8;;https://a/\x07a\x1b]8;;https://b/\x07b');
+    expect(output).toEqual(`<a href="https://a/" ${attrs}>a</a><a href="https://b/" ${attrs}>b</a>`);
+  });
+
+  it('closes a link when an unsafe link opens', () => {
+    const output = fancyAnsi.toHtml('\x1b]8;;https://a/\x07a\x1b]8;;javascript:alert(1)\x07b\x1b]8;;\x07c');
+    expect(output).toEqual(`<a href="https://a/" ${attrs}>a</a>bc`);
+  });
+
+  it.each([
+    'javascript:alert(1)',
+    'JaVaScRiPt:alert(1)',
+    'data:text/html,<script>alert(1)</script>',
+    'vbscript:msgbox(1)',
+    'file:///etc/passwd',
+    '//example.com',
+    '/relative',
+    'not-a-url',
+  ])('renders non-http(s) urls as plain text: %j', (url) => {
+    expect(fancyAnsi.toHtml(`\x1b]8;;${url}\x07link\x1b]8;;\x07`)).toEqual('link');
+  });
+
+  it('ignores a dangling link close', () => {
+    expect(fancyAnsi.toHtml('a\x1b]8;;\x07b')).toEqual('ab');
+  });
+
+  it.each([false, undefined])('renders link text only when hyperlinks is %j', (hyperlinks) => {
+    const output = new FancyAnsi({ hyperlinks }).toHtml('\x1b]8;;https://x/\x07link\x1b]8;;\x07');
+    expect(output).toEqual('link');
+  });
+
+  it('renders link options', () => {
+    const withOptions = new FancyAnsi({ hyperlinks: { target: '_blank', className: 'a b' } });
+    const output = withOptions.toHtml('\x1b]8;;https://x/\x07a\x1b]8;;https://y/\x07b');
+    expect(output).toEqual(`<a href="https://x/" ${attrs} target="_blank" class="a b">a</a><a href="https://y/" ${attrs} target="_blank" class="a b">b</a>`);
+  });
+});
+
 describe('FancyAnsi with untrusted input', () => {
   const fancyAnsi = new FancyAnsi();
 
@@ -172,26 +238,45 @@ describe('FancyAnsi with untrusted input', () => {
     expect(output).not.toContain('javascript');
   });
 
-  it('only emits escaped text and styled spans for random input', () => {
+  it.each([
+    'https://x/"onmouseover="alert(1)',
+    'https://x/\'onmouseover=\'alert(1)',
+    'https://x/?a=1&b=<script>',
+    'https://x/"><script>alert(1)</script>',
+  ])('escapes quotes and special characters in link urls: %j', (url) => {
+    const withLinks = new FancyAnsi({ hyperlinks: true });
+    const output = withLinks.toHtml(`\x1b]8;;${url}\x07link\x1b]8;;\x07`);
+    expect(output).toMatch(safeHtmlRegex);
+    expect(output).toMatch(/^<a href="https:\/\/x\/[^"]*" rel="noopener noreferrer nofollow">link<\/a>$/);
+  });
+
+  it('only emits escaped text, styled spans and http(s) links for random input', () => {
     const random = prng(34);
     const pick = (items: string[]) => items[Math.floor(random() * items.length)];
     const repeat = (fn: () => string, max: number) => Array.from({ length: Math.floor(random() * max) }, fn);
 
     const payloads = ['x', ' ', '<script>', '<', '>', '"', '\'', '&', '=', 'onclick=', 'javascript:', '</span>', '<span style="', '\x01', '\u00e9'];
     const params = ['', '0', '1', '2', '3', '4', '5', '9', '24', '31', '38', '48', '58', '99', '255', '999', '"><script>', ' onclick='];
+    const urls = ['', 'https://x/', 'http://x/?a=1&b=2', 'https://x/"onclick="', 'https://x/\'><script>', 'javascript:alert(1)', 'data:text/html,<b>', 'x'];
     const terminators = ['\x07', '\x1b\\', ''];
     const pieces = [
       () => pick(payloads),
       () => `\x1b[${repeat(() => pick(params), 6).join(';')}${pick(['m', 'm', 'K', ''])}`,
       () => `\x1b[${pick(['38', '48', '58'])};${pick(['2', '5'])};${repeat(() => pick(params), 4).join(';')}m`,
       () => `\x1b]8;;${pick(payloads)}${pick(terminators)}${pick(payloads)}\x1b]8;;${pick(terminators)}`,
+      () => `\x1b]8;;${pick(urls)}${pick(terminators)}`,
       () => pick(['\x1b', '\x1b(B', '\x1b]', '\x1b\\', '\x07']),
     ];
 
+    const converters = [
+      fancyAnsi,
+      new FancyAnsi({ hyperlinks: true }),
+      new FancyAnsi({ hyperlinks: { target: '_blank"onclick="', className: '\'><script>' } }),
+    ];
     const failures: string[] = [];
     for (let i = 0; i < 5000; i += 1) {
       const input = repeat(() => pick(pieces)(), 20).join('');
-      if (!safeHtmlRegex.test(fancyAnsi.toHtml(input))) failures.push(input);
+      if (converters.some((c) => !safeHtmlRegex.test(c.toHtml(input)))) failures.push(input);
     }
 
     expect(failures).toEqual([]);
