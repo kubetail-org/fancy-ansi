@@ -272,6 +272,9 @@ export class FancyAnsi {
    * @returns {string} A browser-safe HTML string with converted ANSI
    */
   public toHtml(input: string): string {
+    // Parser only splits on ESC, so without one the input is a single text packet
+    if (!input.includes('\x1b')) return escape(input);
+
     const attrs: StyleAttrs = new StyleAttrs();
     let buffer = '';
     let inSpan = false;
