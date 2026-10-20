@@ -220,6 +220,9 @@ export function stripAnsi(input: string): string {
 
 // Only http(s) URLs become links; `javascript:`, `data:` and relative URLs don't
 function isHttpUrl(url: string): boolean {
+  // Every link close has an empty url, and new URL('') throws, which is slow. The
+  // URL parser only reports http(s) when the scheme leads the input, so this is safe.
+  if (!/^https?:/i.test(url)) return false;
   try {
     const { protocol } = new URL(url);
     return protocol === 'http:' || protocol === 'https:';

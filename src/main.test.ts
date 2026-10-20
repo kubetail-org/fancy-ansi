@@ -218,8 +218,14 @@ describe('FancyAnsi with hyperlinks', () => {
     '//example.com',
     '/relative',
     'not-a-url',
+    'http://',
   ])('renders non-http(s) urls as plain text: %j', (url) => {
     expect(fancyAnsi.toHtml(`\x1b]8;;${url}\x07link\x1b]8;;\x07`)).toEqual('link');
+  });
+
+  it('accepts an upper-case scheme', () => {
+    const output = fancyAnsi.toHtml('\x1b]8;;HTTPS://x/\x07link\x1b]8;;\x07');
+    expect(output).toEqual(`<a href="HTTPS://x/" ${attrs}>link</a>`);
   });
 
   it('ignores a dangling link close', () => {
