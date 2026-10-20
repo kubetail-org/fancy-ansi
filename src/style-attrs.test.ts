@@ -110,6 +110,14 @@ describe('StyleAttrs', () => {
         expect(attrs.size).toEqual(1);
       });
 
+      it('doesnt update size when attribute is already defined', () => {
+        const attrs = new StyleAttrs();
+        attrs.update({ [StyleAttrsKeys.Color]: 'red' });
+        attrs.update({ [StyleAttrsKeys.Color]: 'green' });
+        expect(attrs.get(StyleAttrsKeys.Color)).toEqual('green');
+        expect(attrs.size).toEqual(1);
+      });
+
       it('ignores inherited values', () => {
         const attrs = new StyleAttrs();
         attrs.update(Object.create({ [StyleAttrsKeys.Color]: 'red' }));
