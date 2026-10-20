@@ -372,6 +372,12 @@ pnpm test
 
 The test files are colocated with the source code in the `src/` directory, with the filename format `{name}.test.(ts|tsx)`.
 
+To check test coverage, use the `coverage` command. It fails if coverage drops below 100%:
+
+```sh
+pnpm coverage
+```
+
 ### Build for production
 
 To build Fancy-ANSI for production, run the `build` command:

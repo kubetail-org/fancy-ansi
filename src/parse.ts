@@ -281,18 +281,11 @@ export class Parser implements IterableIterator<Packet> {
       return { value: pkt, done: false };
     }
 
-    // Other ESC CHECK
-    if (nextChar === '(') {
-      // This specifies the character set, which
-      // should just be ignored
-
-      // We have at least 3, so drop the sequence
-      pkt.kind = PacketKind.Unknown;
-      this.lastIndex += 3;
-      return { value: pkt, done: false };
-    }
-
-    return { value: null, done: true };
+    // nextChar is '(', which specifies the character set and
+    // should just be ignored. We have at least 3, so drop the sequence
+    pkt.kind = PacketKind.Unknown;
+    this.lastIndex += 3;
+    return { value: pkt, done: false };
   }
 
   [Symbol.iterator](): IterableIterator<Packet> {

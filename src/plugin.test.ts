@@ -61,4 +61,8 @@ describe('plugin.ts', () => {
   it('exposes the palettes in the theme', () => {
     expect(plugin.config.theme.ansi.colors.vscode).toEqual(colors.vscode);
   });
+
+  it('has a no-op handler', () => {
+    expect(plugin.handler()).toBeUndefined();
+  });
 });

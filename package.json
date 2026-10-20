@@ -37,6 +37,7 @@
   "scripts": {
     "build": "tsc && vite build",
     "build-bench": "vite build --config vite-bench.config.ts",
+    "coverage": "vitest run --coverage",
     "dev": "vite",
     "lint": "eslint \"./src/**/*.ts{,x}\"",
     "test": "vitest"
@@ -57,6 +58,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
+    "@vitest/coverage-v8": "^5.0.5",
     "ansi_up": "^6.0.6",
     "beautify-benchmark": "^0.2.4",
     "benchmark": "^2.1.4",

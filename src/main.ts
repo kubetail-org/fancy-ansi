@@ -108,23 +108,11 @@ codeMap[13] = StandardColorKeys.BrightMagenta;
 codeMap[14] = StandardColorKeys.BrightCyan;
 codeMap[15] = StandardColorKeys.BrightWhite;
 
-/**
- * Get key from code
- * @param {string} code
- * @returns {StyleAttrsKey} The key
- */
-function getStyleAttrsKey(code: string): StyleAttrsKeys {
-  switch (code) {
-    case '38':
-      return StyleAttrsKeys.Color;
-    case '48':
-      return StyleAttrsKeys.BackgroundColor;
-    case '58':
-      return StyleAttrsKeys.TextDecorationColor;
-    default:
-      throw new Error('not implemented');
-  }
-}
+const extendedColorKeyMap: Record<string, StyleAttrsKeys> = {
+  38: StyleAttrsKeys.Color,
+  48: StyleAttrsKeys.BackgroundColor,
+  58: StyleAttrsKeys.TextDecorationColor,
+};
 
 /**
  * Read SGR packet and apply 256-color palette to style attributes
@@ -135,7 +123,7 @@ function processSGRPacket256(packet: Packet, attrs: StyleAttrs) {
   const parts = packet.text.split(';');
   if (parts.length !== 3) return;
 
-  const key = getStyleAttrsKey(parts[0]);
+  const key = extendedColorKeyMap[parts[0]];
   const colorCode = parseInt(parts[2], 10);
 
   if (0 <= colorCode && colorCode <= 15) {
@@ -165,7 +153,7 @@ function processSGRPacketTruecolor(packet: Packet, attrs: StyleAttrs) {
   const parts = packet.text.split(';');
   if (parts.length !== 5) return;
 
-  const key = getStyleAttrsKey(parts[0]);
+  const key = extendedColorKeyMap[parts[0]];
   const [, , r, g, b] = parts;
   attrs.set(key, `rgb(${r},${g},${b})`);
 }
