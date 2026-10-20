@@ -149,6 +149,21 @@ export class Parser implements IterableIterator<Packet> {
 
     // handle SGR
     if (nextChar === '[') {
+      // Fast path for the common ESC [ digits/semicolons m. The regex's legal
+      // alternative would match it with no private-mode char and command 'm'.
+      let end = start + 2;
+      let c = input.charCodeAt(end);
+      while ((c >= 48 && c <= 57) || c === 59) {
+        end += 1;
+        c = input.charCodeAt(end);
+      }
+      if (c === 109) {
+        pkt.kind = PacketKind.SGR;
+        pkt.text = input.slice(start + 2, end);
+        this.lastIndex = end + 1;
+        return { value: pkt, done: false };
+      }
+
       csiRegex.lastIndex = start;
       const match = csiRegex.exec(input);
 
@@ -177,13 +192,8 @@ export class Parser implements IterableIterator<Packet> {
         return { value: pkt, done: false };
       }
 
-      // If not a valid SGR, we don't handle
-      if ((match[1] !== '') || (match[3] !== 'm')) {
-        pkt.kind = PacketKind.Unknown;
-      } else {
-        pkt.kind = PacketKind.SGR;
-      }
-
+      // SGR took the fast path above, so this is a CSI we don't handle
+      pkt.kind = PacketKind.Unknown;
       pkt.text = match[2]; // Just the parameters
       this.lastIndex += match[0].length;
       return { value: pkt, done: false };

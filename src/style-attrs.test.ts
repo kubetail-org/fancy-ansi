@@ -239,5 +239,23 @@ describe('StyleAttrs', () => {
         expect(attrs.get(StyleAttrsKeys.Color)).toEqual('green');
       });
     });
+
+    it('returns modifiers that stay correct when reused', () => {
+      const append = StyleAttrs.appendVal(StyleAttrsKeys.Color, 'red');
+      const remove = StyleAttrs.removeVal(StyleAttrsKeys.Color, 'red');
+      const attrs = new StyleAttrs();
+      for (let i = 0; i < 2; i += 1) {
+        append(attrs);
+        expect(attrs.get(StyleAttrsKeys.Color)).toEqual('red');
+        remove(attrs);
+        expect(attrs.get(StyleAttrsKeys.Color)).toEqual(undefined);
+        attrs.set(StyleAttrsKeys.Color, 'green');
+        append(attrs);
+        expect(attrs.get(StyleAttrsKeys.Color)).toEqual('green red');
+        remove(attrs);
+        expect(attrs.get(StyleAttrsKeys.Color)).toEqual('green');
+        attrs.clear();
+      }
+    });
   });
 });
