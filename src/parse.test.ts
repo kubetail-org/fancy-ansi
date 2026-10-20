@@ -113,6 +113,7 @@ describe('parse', () => {
     ['CSI', '\x1b[1'],
     ['OSC', '\x1b]8'],
     ['OSC without terminator', '\x1b]8;;url'],
+    ['OSC with ESC but no terminator', '\x1b]8;;url\x1b[1m'],
   ])('drops incomplete %s at end of input', (_, input) => {
     expect(parse(input)).toEqual([]);
   });
@@ -125,6 +126,8 @@ describe('parse', () => {
     ['non-hyperlink OSC', '\x1b]0;title'],
     ['illegal char in OSC url', '\x1b]8;;url\x01'],
     ['OSC without url separator', '\x1b]8;url\x07'],
+    ['OSC with ESC in url', '\x1b]8;;url\x1bx\x07'],
+    ['OSC with url over 512 chars', `\x1b]8;;${'x'.repeat(513)}\x07`],
   ])('drops only the ESC from %s', (_, input) => {
     const packets = parse(input);
     expect(packets[0].kind).toEqual(PacketKind.ESC);
