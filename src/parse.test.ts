@@ -101,4 +101,35 @@ describe('parse', () => {
     expect(packets[0].kind).toEqual(PacketKind.SGR);
     expect(packets[0].text).toEqual('1;3;4');
   });
+
+  it.each([
+    ['escape', '\x1b['],
+    ['CSI', '\x1b[1'],
+    ['OSC', '\x1b]8'],
+    ['OSC without terminator', '\x1b]8;;url'],
+    ['OSC without closing sequence', '\x1b]8;;url\x07text'],
+  ])('drops incomplete %s at end of input', (_, input) => {
+    expect(parse(input)).toEqual([]);
+  });
+
+  it.each([
+    ['single ESC', '\x1bcx'],
+    ['illegal CSI', '\x1b[1\x01'],
+    ['non-hyperlink OSC', '\x1b]0;title'],
+    ['illegal char in OSC url', '\x1b]8;;url\x01'],
+    ['illegal char in OSC text', '\x1b]8;;url\x07te\x01xt'],
+    ['malformed OSC', '\x1b]8;;url\x07\x07'],
+  ])('drops only the ESC from %s', (_, input) => {
+    const packets = parse(input);
+    expect(packets[0].kind).toEqual(PacketKind.ESC);
+    expect(packets[0].text).toEqual('\x1b');
+    expect(packets.slice(1).map((p) => p.text).join('')).toEqual(input.slice(1));
+  });
+
+  it('returns packet of kind `Unknown` for character set sequences', () => {
+    const packets = parse('\x1b(Bx');
+    expect(packets.length).toEqual(2);
+    expect(packets[0].kind).toEqual(PacketKind.Unknown);
+    expect(packets[1].text).toEqual('x');
+  });
 });

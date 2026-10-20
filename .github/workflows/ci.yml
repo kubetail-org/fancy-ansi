@@ -26,7 +26,7 @@ jobs:
           node-version-file: .node-version
       - uses: pnpm/action-setup@v6
       - run: pnpm install
-      - run: pnpm test run
+      - run: pnpm coverage
 
   build:
     runs-on: ubuntu-latest
