@@ -14,6 +14,21 @@ exports[`AnsiHtml > passes through className 1`] = `
 </DocumentFragment>
 `;
 
+exports[`AnsiHtml > passes through hyperlink options 1`] = `
+<DocumentFragment>
+  <span>
+    <a
+      class="link"
+      href="https://example.com"
+      rel="noopener noreferrer nofollow"
+      target="_blank"
+    >
+      link
+    </a>
+  </span>
+</DocumentFragment>
+`;
+
 exports[`AnsiHtml > passes through style 1`] = `
 <DocumentFragment>
   <span
