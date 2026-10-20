@@ -290,7 +290,7 @@ export class FancyAnsi {
     };
 
     // iterate through packets
-    Array.from(new Parser(input)).forEach((packet) => {
+    for (const packet of new Parser(input)) {
       switch (packet.kind) {
         case PacketKind.Text:
           buffer += escape(packet.text);
@@ -318,7 +318,7 @@ export class FancyAnsi {
         default:
           break;
       }
-    });
+    }
 
     // close open tags
     closeSpan();
