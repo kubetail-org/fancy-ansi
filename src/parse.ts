@@ -36,7 +36,7 @@ const csiRegex = rgx`
   (?:                         # illegal sequence
     \x1b\[                      # CSI
     [\x20-\x7e]*                # anything legal
-    ([\x00-\x1f:])              # anything illegal
+    ([^\x20-\x39\x3b-\x7e])     # anything illegal (incl. : and non-ASCII)
   )
 `;
 
@@ -78,7 +78,7 @@ const oscTerminatorRegex = rgxG`
 `;
 */
 
-const csiRegex = /^(?:\x1b\[([\x3c-\x3f]?)([\d;]*)([\x20-\x2f]?[\x40-\x7e]))|(?:\x1b\[[\x20-\x7e]*([\x00-\x1f:]))/;
+const csiRegex = /^(?:\x1b\[([\x3c-\x3f]?)([\d;]*)([\x20-\x2f]?[\x40-\x7e]))|(?:\x1b\[[\x20-\x7e]*([^\x20-\x39\x3b-\x7e]))/;
 const oscRegex = /^\x1b\]8;[\x20-\x3a\x3c-\x7e]*;([\x21-\x7e]{0,512})(?:(?:\x1b\\)|(?:\x07))([\x20-\x7e]+)\x1b\]8;;(?:(?:\x1b\\)|(?:\x07))/;
 const oscTerminatorRegex = /(?:(\x1b\\)|(\x07))|([\x00-\x06]|[\x08-\x1a]|[\x1c-\x1f])/g;
 

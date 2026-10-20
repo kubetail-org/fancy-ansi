@@ -108,6 +108,11 @@ describe('FancyAnsi', () => {
     expect(fancyAnsi.toHtml(input)).toEqual('x');
   });
 
+  it('keeps text after a CSI with a non-ASCII character', () => {
+    const fancyAnsi = new FancyAnsi();
+    expect(fancyAnsi.toHtml('a\x1b[\u00e9 rest\nnext')).toEqual('a[\u00e9 rest\nnext');
+  });
+
   it('ignores non-SGR escape sequences', () => {
     const fancyAnsi = new FancyAnsi();
     const output = fancyAnsi.toHtml('a\x1b[2Kb\x1b(Bc');
