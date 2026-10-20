@@ -115,6 +115,8 @@ describe('parse', () => {
   it.each([
     ['single ESC', '\x1bcx'],
     ['illegal CSI', '\x1b[1\x01'],
+    ['CSI with non-ASCII char', '\x1b[\u00e9 rest'],
+    ['CSI with DEL', '\x1b[1\x7f rest'],
     ['non-hyperlink OSC', '\x1b]0;title'],
     ['illegal char in OSC url', '\x1b]8;;url\x01'],
     ['illegal char in OSC text', '\x1b]8;;url\x07te\x01xt'],
