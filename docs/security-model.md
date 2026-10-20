@@ -70,7 +70,8 @@ Both can mislead a reader.
 
 **`stripAnsi` is not a terminal sanitizer.** It uses `ansi-regex`, not the `toHtml` parser. It can
 leave a lone ESC, unterminated OSC payloads and C0 characters behind, and it strips the 8-bit CSI
-`\x9b` that `toHtml` renders as text. Do not write its output to a terminal as if it were clean.
+`\x9b` that `toHtml` renders as text. Do not write its output to a terminal as if it were clean. The
+README's `stripAnsi()` section says so.
 
 **It does not bound work.** It has no input size limit and no time budget. A consumer that renders
 untrusted input should cap length per call. A consumer that renders logs should convert one line at
