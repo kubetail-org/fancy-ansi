@@ -104,8 +104,7 @@ export class StyleAttrs {
         // @ts-expect-error key type is string
         const value = attrs[key];
         // @ts-expect-error key type is string
-        this.attrArray[key] = value;
-        if (value !== undefined) this._size += 1;
+        if (value !== undefined) this.set(key, value);
       }
     }
   }

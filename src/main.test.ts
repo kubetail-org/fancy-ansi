@@ -81,6 +81,13 @@ describe('FancyAnsi', () => {
     expect(output).toEqual('<span style="text-decoration:underline line-through;">x</span><span style="text-decoration:line-through;">y</span>z');
   });
 
+  it('emits no style-less span after a repeated code is reset', () => {
+    const fancyAnsi = new FancyAnsi();
+    const output = fancyAnsi.toHtml('\x1b[31m\x1b[31m\x1b[39mx');
+    expect(output).not.toContain('style=""');
+    expect(output.endsWith('</span>x')).toBe(true);
+  });
+
   it('supports 256-color standard colors', () => {
     const fancyAnsi = new FancyAnsi();
     const output = fancyAnsi.toHtml('\x1b[38;5;1mx');
