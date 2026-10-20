@@ -108,54 +108,89 @@ codeMap[13] = StandardColorKeys.BrightMagenta;
 codeMap[14] = StandardColorKeys.BrightCyan;
 codeMap[15] = StandardColorKeys.BrightWhite;
 
-const extendedColorKeyMap: Record<string, StyleAttrsKeys> = {
-  38: StyleAttrsKeys.Color,
-  48: StyleAttrsKeys.BackgroundColor,
-  58: StyleAttrsKeys.TextDecorationColor,
-};
+const SEMICOLON = 59; // ';'
+const ZERO = 48; // '0'
+
+const palette256 = new Array<string>(256);
+for (let i = 0; i < 16; i += 1) {
+  const colorKey = codeMap[i];
+  palette256[i] = `var(--ansi-${colorKey}, ${xtermjs[colorKey]})`;
+}
+// 6x6x6 rgb cube
+const cubeLevels = [0x00, 0x5f, 0x87, 0xaf, 0xd7, 0xff];
+for (let i = 0; i < 216; i += 1) {
+  const r = cubeLevels[(i / 36) | 0];
+  const g = cubeLevels[((i / 6) | 0) % 6];
+  const b = cubeLevels[i % 6];
+  palette256[16 + i] = `rgb(${r},${g},${b})`;
+}
+// 24-step grayscale
+for (let i = 0; i < 24; i += 1) {
+  const c = 8 + i * 10;
+  palette256[232 + i] = `var(--ansi-gray-${24 - i}, rgb(${c},${c},${c}))`;
+}
 
 /**
- * Read SGR packet and apply 256-color palette to style attributes
- * @param {Packet} packet - The parsed packet
+ * Apply one SGR code to style attributes
+ * @param {number} code - The SGR code
  * @param {StyleAttrs} attrs - The current style attributes
  */
-function processSGRPacket256(packet: Packet, attrs: StyleAttrs) {
-  const parts = packet.text.split(';');
-  if (parts.length !== 3) return;
+function applySGRCode(code: number, attrs: StyleAttrs) {
+  // handle reset
+  if (code === 0) {
+    attrs.clear();
+    return;
+  }
 
-  const key = extendedColorKeyMap[parts[0]];
-  const colorCode = parseInt(parts[2], 10);
+  // get attribute modifier
+  const newAttrsOrModifierFn = styleAttrsMap[code];
+  if (!newAttrsOrModifierFn) return;
 
-  if (0 <= colorCode && colorCode <= 15) {
-    const colorKey = codeMap[colorCode];
-    attrs.set(key, `var(--ansi-${colorKey}, ${xtermjs[colorKey]})`);
-  } else if (16 <= colorCode && colorCode <= 231) {
-    // 6x6 rgb cube
-    const x = colorCode - 16;
-    const v = [0x00, 0x5f, 0x87, 0xaf, 0xd7, 0xff];
-    const r = v[(x / 36) % 6 | 0];
-    const g = v[(x / 6) % 6 | 0];
-    const b = v[x % 6];
-    attrs.set(key, `rgb(${r},${g},${b})`);
-  } else if (232 <= colorCode && colorCode <= 255) {
-    // 24-step grayscale
-    const c = 8 + (colorCode - 232) * 10;
-    attrs.set(key, `var(--ansi-gray-${256 - colorCode}, rgb(${c},${c},${c}))`);
+  // update attrs
+  if (typeof newAttrsOrModifierFn === 'function') newAttrsOrModifierFn(attrs);
+  else attrs.update(newAttrsOrModifierFn);
+}
+
+/**
+ * Get the style attribute an extended color packet sets
+ * @param {string} text - The SGR parameters
+ * @returns {StyleAttrsKeys | undefined} The key for "38;5;n" and "38;2;r;g;b" (also 48 and 58)
+ */
+function getExtendedColorKey(text: string): StyleAttrsKeys | undefined {
+  if (text[1] !== '8' || text[2] !== ';' || text[4] !== ';') return undefined;
+  if (text[3] !== '2' && text[3] !== '5') return undefined;
+  switch (text[0]) {
+    case '3': return StyleAttrsKeys.Color;
+    case '4': return StyleAttrsKeys.BackgroundColor;
+    case '5': return StyleAttrsKeys.TextDecorationColor;
+    default: return undefined;
   }
 }
 
 /**
- * Read SGR packet and apply truecolor properties to style attributes
- * @param {Packet} packet - The parsed packet
+ * Apply an extended color to style attributes; malformed packets set nothing
+ * @param {string} text - The SGR parameters
+ * @param {StyleAttrsKeys} key - The style attribute to set
  * @param {StyleAttrs} attrs - The current style attributes
  */
-function processSGRPacketTruecolor(packet: Packet, attrs: StyleAttrs) {
-  const parts = packet.text.split(';');
-  if (parts.length !== 5) return;
+function processExtendedColor(text: string, key: StyleAttrsKeys, attrs: StyleAttrs) {
+  if (text[3] === '5') {
+    // exactly one parameter: the palette index
+    let index = 0;
+    for (let i = 5; i < text.length; i += 1) {
+      const c = text.charCodeAt(i);
+      if (c === SEMICOLON) return;
+      index = index * 10 + (c - ZERO);
+    }
+    if (text.length > 5 && index < 256) attrs.set(key, palette256[index]);
+    return;
+  }
 
-  const key = extendedColorKeyMap[parts[0]];
-  const [, , r, g, b] = parts;
-  attrs.set(key, `rgb(${r},${g},${b})`);
+  // exactly three parameters: r, g and b, kept as written
+  const g = text.indexOf(';', 5);
+  const b = text.indexOf(';', g + 1);
+  if (g === -1 || b === -1 || text.indexOf(';', b + 1) !== -1) return;
+  attrs.set(key, `rgb(${text.slice(5, g)},${text.slice(g + 1, b)},${text.slice(b + 1)})`);
 }
 
 /**
@@ -164,29 +199,27 @@ function processSGRPacketTruecolor(packet: Packet, attrs: StyleAttrs) {
  * @param {StyleAttrs} attrs - The current style attributes
  */
 function processSGRPacket(packet: Packet, attrs: StyleAttrs) {
-  if (/^(38|48|58);(2|5);/.test(packet.text)) {
-    if (packet.text[3] === '2') processSGRPacketTruecolor(packet, attrs);
-    else processSGRPacket256(packet, attrs);
+  const { text } = packet;
+
+  const key = getExtendedColorKey(text);
+  if (key !== undefined) {
+    processExtendedColor(text, key, attrs);
     return;
   }
 
-  packet.text.split(';').forEach((codeStr) => {
-    const code = parseInt(codeStr || '0', 10);
-
-    // handle reset
-    if (code === 0) {
-      attrs.clear();
-      return;
+  // Parameters are digits and ';' only, so read each code in place.
+  // An empty parameter counts as 0.
+  let code = 0;
+  for (let i = 0; i < text.length; i += 1) {
+    const c = text.charCodeAt(i);
+    if (c === SEMICOLON) {
+      applySGRCode(code, attrs);
+      code = 0;
+    } else {
+      code = code * 10 + (c - ZERO);
     }
-
-    // get attribute modifier
-    const newAttrsOrModifierFn = styleAttrsMap[code];
-    if (!newAttrsOrModifierFn) return;
-
-    // update attrs
-    if (typeof newAttrsOrModifierFn === 'function') newAttrsOrModifierFn(attrs);
-    else attrs.update(newAttrsOrModifierFn);
-  });
+  }
+  applySGRCode(code, attrs);
 }
 
 // Every ANSI sequence starts with ESC or the 8-bit CSI. Checking for them with
