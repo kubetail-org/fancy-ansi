@@ -33,6 +33,12 @@ describe('FancyAnsi', () => {
     expect(output).toEqual('&lt;script&gt;alert(&quot;hi&quot;);&lt;/script&gt;');
   });
 
+  it('leaves 8-bit CSI as text', () => {
+    const fancyAnsi = new FancyAnsi();
+    const output = fancyAnsi.toHtml('one\x9b1mtwo');
+    expect(output).toEqual('one\x9b1mtwo');
+  });
+
   it('ignores dangling resets', () => {
     const fancyAnsi = new FancyAnsi();
     const output = fancyAnsi.toHtml('\x1b[0m');
