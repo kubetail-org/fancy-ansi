@@ -43,37 +43,33 @@ const csiRegex = rgx`
 const oscRegex = rgx`
   ^                           # beginning of line
                               #
-  \x1b\]8;                    # OSC Hyperlink
-  [\x20-\x3a\x3c-\x7e]*       # params (excluding ;)
-  ;                           # end of params
-  ([\x21-\x7e]{0,512})        # URL capture (empty closes the link)
-  (?:                         # ST
-    (?:\x1b\\)                  # ESC \
-    |                           # alternate
-    (?:\x07)                    # BEL (what xterm did)
-  )
-`;
-
-const oscTerminatorRegex = rgx`
+                              # First attempt
   (?:                         # legal sequence
-    (\x1b\\)                    # ESC \
-    |                           # alternate
-    (\x07)                      # BEL (what xterm did)
+    \x1b\]8;                    # OSC Hyperlink
+    [\x20-\x3a\x3c-\x7e]*       # params (excluding ;)
+    ;                           # end of params
+    ([\x21-\x7e]{0,512})        # URL capture (empty closes the link)
+    (?:                         # ST
+      \x1b\\                      # ESC \
+      |                           # alternate
+      \x07                        # BEL (what xterm did)
+    )
   )
   |                           # alternate (second attempt)
-  (                           # illegal sequence
-    [\x00-\x06]                 # anything illegal
-    |                           # alternate
-    [\x08-\x1a]                 # anything illegal
-    |                           # alternate
-    [\x1c-\x1f]                 # anything illegal
+  (?:                         # illegal sequence
+    \x1b\]8;                    # OSC Hyperlink
+    [^\x00-\x1a\x1c-\x1f]*      # anything but a control char (ESC allowed)
+    (                           # whichever comes first
+      \x1b\\                      # ESC \
+      |                           # alternate
+      [\x00-\x1a\x1c-\x1f]        # BEL or an illegal control char
+    )
   )
 `;
 */
 
 const csiRegex = /^(?:\x1b\[([\x3c-\x3f]?)([\d;]*)([\x20-\x2f]?[\x40-\x7e]))|(?:\x1b\[[\x20-\x7e]*([^\x20-\x39\x3b-\x7e]))/;
-const oscRegex = /^\x1b\]8;[\x20-\x3a\x3c-\x7e]*;([\x21-\x7e]{0,512})(?:(?:\x1b\\)|(?:\x07))/;
-const oscTerminatorRegex = /(?:(\x1b\\)|(\x07))|([\x00-\x06]|[\x08-\x1a]|[\x1c-\x1f])/;
+const oscRegex = /^(?:\x1b\]8;[\x20-\x3a\x3c-\x7e]*;([\x21-\x7e]{0,512})(?:\x1b\\|\x07))|(?:\x1b\]8;[^\x00-\x1a\x1c-\x1f]*(\x1b\\|[\x00-\x1a\x1c-\x1f]))/;
 
 /**
  * Represents the different kinds of packets that can be parsed
@@ -203,6 +199,7 @@ export class Parser implements IterableIterator<Packet> {
     if (nextChar === ']') {
       if (len < 4) return { value: null, done: true };
 
+      // only OSC 8 (hyperlinks) is supported
       if (remaining.charAt(2) !== '8' || remaining.charAt(3) !== ';') {
         // This is not a match, so we'll just treat it as ESC
         pkt.kind = PacketKind.ESC;
@@ -211,15 +208,18 @@ export class Parser implements IterableIterator<Packet> {
         return { value: pkt, done: false };
       }
 
-      // OSC 8 opens a hyperlink (with a URL) or closes one (empty URL). The
-      // link text between them is parsed like any other text.
-      const terminator = remaining.match(oscTerminatorRegex);
+      // Same approach as CSI: the first alternate matches a legal sequence,
+      // the second an illegal one, and no match means the sequence is incomplete.
+      const match = remaining.match(oscRegex);
 
-      if (terminator === null) return { value: null, done: true };
+      if (match === null) return { value: null, done: true };
 
-      const match = terminator[3] ? null : remaining.match(oscRegex);
+      // match is an array
+      // 0 - total match
+      // 1 - url
+      // 2 - terminator of an illegal sequence
 
-      if (match === null) {
+      if (match[2]) {
         // Illegal sequence, just remove the ESC
         pkt.kind = PacketKind.ESC;
         pkt.text = remaining[0];
@@ -227,6 +227,8 @@ export class Parser implements IterableIterator<Packet> {
         return { value: pkt, done: false };
       }
 
+      // OSC 8 opens a hyperlink (with a URL) or closes one (empty URL). The
+      // link text between them is parsed like any other text.
       pkt.kind = PacketKind.OSCURL;
       pkt.url = match[1];
       this.lastIndex += match[0].length;
