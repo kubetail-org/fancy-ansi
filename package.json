@@ -35,7 +35,7 @@
     "/dist"
   ],
   "scripts": {
-    "build": "tsc && vite build",
+    "build": "tsc && tsdown",
     "build-bench": "vite build --config vite-bench.config.ts",
     "coverage": "vitest run --coverage",
     "dev": "vite",
@@ -44,7 +44,6 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
-    "@rollup/plugin-typescript": "^12.3.0",
     "@stylistic/eslint-plugin": "^5.10.0",
     "@tailwindcss/node": "^4.3.3",
     "@tailwindcss/vite": "^4.3.3",
@@ -74,8 +73,8 @@
     "microtime": "^3.1.1",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
-    "rollup-plugin-auto-external": "^2.0.0",
     "tailwindcss": "^4.3.3",
+    "tsdown": "^0.23.1",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.71.2",
     "vite": "^8.3.4",
