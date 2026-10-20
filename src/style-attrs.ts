@@ -48,11 +48,6 @@ nameMap[StyleAttrsKeys.VerticalAlign] = 'vertical-align';
 nameMap[StyleAttrsKeys.Visibility] = 'visibility';
 
 /**
- * Represents a map between style attribute keys and string values
- */
-export type StyleAttrsDict = { [key in StyleAttrsKeys]?: string };
-
-/**
  * Represents a function that modifies style attributes
  */
 export type StyleAttrsModifierFn = (attrs: StyleAttrs) => void;
@@ -95,21 +90,6 @@ export class StyleAttrs {
   }
 
   /**
-   * Merge values from another object into this one
-   * @param {StyleAttrs} attrs - The attributes to merge into instance
-   */
-  public update(attrs: StyleAttrsDict) {
-    for (const key in attrs) {
-      if (attrs.hasOwnProperty(key)) {
-        // @ts-expect-error key type is string
-        const value = attrs[key];
-        // @ts-expect-error key type is string
-        if (value !== undefined) this.set(key, value);
-      }
-    }
-  }
-
-  /**
    * Delete all style attributes
    */
   public clear() {
@@ -136,6 +116,18 @@ export class StyleAttrs {
       buffer += `${nameMap[i]}:${value};`;
     });
     return buffer;
+  }
+
+  /**
+   * Set attribute at `key` to `value`
+   * @param {StyleAttrsKeys} key
+   * @param {string} value
+   * @returns {StyleAttrsModifierFn} Modifier function
+   */
+  static setVal(key: StyleAttrsKeys, value: string): StyleAttrsModifierFn {
+    return (attrs) => {
+      attrs.set(key, value);
+    };
   }
 
   /**

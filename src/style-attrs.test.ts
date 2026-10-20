@@ -58,6 +58,26 @@ describe('StyleAttrs', () => {
       });
     });
 
+    describe('.setVal()', () => {
+      it('returns attribute modifier that sets attribute', () => {
+        const attrs = new StyleAttrs();
+        const fn = StyleAttrs.setVal(StyleAttrsKeys.Color, 'red');
+        fn(attrs);
+        expect(attrs.get(StyleAttrsKeys.Color)).toEqual('red');
+        expect(attrs.size).toEqual(1);
+      });
+
+      it('returns attribute modifier that replaces attribute without changing size', () => {
+        const attrs = new StyleAttrs();
+        attrs.set(StyleAttrsKeys.Color, 'red');
+
+        const fn = StyleAttrs.setVal(StyleAttrsKeys.Color, 'green');
+        fn(attrs);
+        expect(attrs.get(StyleAttrsKeys.Color)).toEqual('green');
+        expect(attrs.size).toEqual(1);
+      });
+    });
+
     describe('.delete()', () => {
       it('doesnt change value or size when attribute not present', () => {
         const attrs = new StyleAttrs();
@@ -78,61 +98,11 @@ describe('StyleAttrs', () => {
       });
     });
 
-    describe('.update()', () => {
-      it('sets values and updates size on one new attributes', () => {
-        const attrs = new StyleAttrs();
-        attrs.update({
-          [StyleAttrsKeys.Color]: 'red',
-        });
-        expect(attrs.get(StyleAttrsKeys.Color)).toEqual('red');
-        expect(attrs.size).toEqual(1);
-      });
-
-      it('sets values and updates size on multiple new attributes', () => {
-        const attrs = new StyleAttrs();
-        attrs.update({
-          [StyleAttrsKeys.Color]: 'red',
-          [StyleAttrsKeys.BackgroundColor]: 'green',
-        });
-        expect(attrs.get(StyleAttrsKeys.Color)).toEqual('red');
-        expect(attrs.get(StyleAttrsKeys.BackgroundColor)).toEqual('green');
-        expect(attrs.size).toEqual(2);
-      });
-
-      it('ignores values that are undefined', () => {
-        const attrs = new StyleAttrs();
-        attrs.update({
-          [StyleAttrsKeys.Color]: 'red',
-          [StyleAttrsKeys.BackgroundColor]: undefined,
-        });
-        expect(attrs.get(StyleAttrsKeys.Color)).toEqual('red');
-        expect(attrs.get(StyleAttrsKeys.BackgroundColor)).toEqual(undefined);
-        expect(attrs.size).toEqual(1);
-      });
-
-      it('doesnt update size when attribute is already defined', () => {
-        const attrs = new StyleAttrs();
-        attrs.update({ [StyleAttrsKeys.Color]: 'red' });
-        attrs.update({ [StyleAttrsKeys.Color]: 'green' });
-        expect(attrs.get(StyleAttrsKeys.Color)).toEqual('green');
-        expect(attrs.size).toEqual(1);
-      });
-
-      it('ignores inherited values', () => {
-        const attrs = new StyleAttrs();
-        attrs.update(Object.create({ [StyleAttrsKeys.Color]: 'red' }));
-        expect(attrs.get(StyleAttrsKeys.Color)).toEqual(undefined);
-        expect(attrs.size).toEqual(0);
-      });
-    });
-
     describe('.clear()', () => {
       it('resets values and size when called', () => {
         const attrs = new StyleAttrs();
-        attrs.update({
-          [StyleAttrsKeys.Color]: 'red',
-          [StyleAttrsKeys.BackgroundColor]: 'green',
-        });
+        attrs.set(StyleAttrsKeys.Color, 'red');
+        attrs.set(StyleAttrsKeys.BackgroundColor, 'green');
         expect(attrs.get(StyleAttrsKeys.Color)).toEqual('red');
         expect(attrs.get(StyleAttrsKeys.BackgroundColor)).toEqual('green');
         expect(attrs.size).toEqual(2);
@@ -166,6 +136,26 @@ describe('StyleAttrs', () => {
   });
 
   describe('class methods', () => {
+    describe('.setVal()', () => {
+      it('returns attribute modifier that sets attribute', () => {
+        const attrs = new StyleAttrs();
+        const fn = StyleAttrs.setVal(StyleAttrsKeys.Color, 'red');
+        fn(attrs);
+        expect(attrs.get(StyleAttrsKeys.Color)).toEqual('red');
+        expect(attrs.size).toEqual(1);
+      });
+
+      it('returns attribute modifier that replaces attribute without changing size', () => {
+        const attrs = new StyleAttrs();
+        attrs.set(StyleAttrsKeys.Color, 'red');
+
+        const fn = StyleAttrs.setVal(StyleAttrsKeys.Color, 'green');
+        fn(attrs);
+        expect(attrs.get(StyleAttrsKeys.Color)).toEqual('green');
+        expect(attrs.size).toEqual(1);
+      });
+    });
+
     describe('.delete()', () => {
       it('returns attribute modifier that deletes attributes', () => {
         const attrs = new StyleAttrs();
