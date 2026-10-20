@@ -363,6 +363,14 @@ Example:
   console.log(`string without ansi: ${withoutAnsi}`);
 ```
 
+**`stripAnsi()` is not a terminal sanitizer.** It uses [`ansi-regex`](https://github.com/chalk/ansi-regex), not the `toHtml()` parser, so the two can disagree on what a sequence is. Its output can still contain a lone ESC, the tail of an unterminated OSC sequence, and C0 characters such as `\r` and `\b`. Don't write its output to a terminal as if it were clean.
+
+```typescript
+stripAnsi('x\x1bP1$r\x1b');      // => 'x1$r\x1b'  (lone ESC left)
+stripAnsi('a\x1b]8;;http://x');  // => 'attp://x'  (head of unterminated OSC stripped)
+stripAnsi('\x9b31mred');         // => 'red', while toHtml() keeps '\x9b31mred' as text
+```
+
 ### colors - Built-in palettes
 
 ```
