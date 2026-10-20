@@ -54,9 +54,9 @@ const oscRegex = rgx`
   |                           # alternate (second attempt)
   (?:                         # illegal sequence
     \x1b\]8;                    # OSC Hyperlink
-    [^\x00-\x1a\x1c-\x1f]*      # anything but a control char (ESC allowed)
+    [^\x00-\x1f]*               # anything but a control char
     (                           # whichever comes first
-      \x1b\\                      # ESC \
+      \x1b\\?                     # ESC \, or a bare ESC so the run ends there
       |                           # alternate
       [\x00-\x1a\x1c-\x1f]        # BEL or an illegal control char
     )
@@ -69,7 +69,7 @@ const oscRegex = rgx`
 // alternative, but anchoring both doesn't change matches: if the illegal one
 // fails at the start, it can't match further ahead either.
 const csiRegex = /(?:\x1b\[([\x3c-\x3f]?)([\d;]*)([\x20-\x2f]?[\x40-\x7e]))|(?:\x1b\[[\x20-\x7e]*([^\x20-\x39\x3b-\x7e]))/y;
-const oscRegex = /(?:\x1b\]8;[\x20-\x3a\x3c-\x7e]*;([\x21-\x7e]{0,512})(?:\x1b\\|\x07))|(?:\x1b\]8;[^\x00-\x1a\x1c-\x1f]*(\x1b\\|[\x00-\x1a\x1c-\x1f]))/y;
+const oscRegex = /(?:\x1b\]8;[\x20-\x3a\x3c-\x7e]*;([\x21-\x7e]{0,512})(?:\x1b\\|\x07))|(?:\x1b\]8;[^\x00-\x1f]*(\x1b\\?|[\x00-\x1a\x1c-\x1f]))/y;
 
 /**
  * Represents the different kinds of packets that can be parsed
@@ -136,16 +136,11 @@ export class Parser implements IterableIterator<Packet> {
       return { value: pkt, done: false };
     }
 
-    if (len < 3) {
-      // sequences need at least 3 so this means last escape is incomplete
-      return { value: null, done: true };
-    }
-
     // handle escapes
     const nextChar = input.charAt(start + 1);
 
-    // single ESC
-    if ((nextChar !== '[') && (nextChar !== ']') && (nextChar !== '(')) {
+    // single ESC, or a character set sequence cut short by the end of input
+    if ((nextChar !== '[') && (nextChar !== ']') && (nextChar !== '(' || len < 3)) {
       pkt.kind = PacketKind.ESC;
       pkt.text = '\x1b';
       this.lastIndex += 1;
@@ -163,12 +158,9 @@ export class Parser implements IterableIterator<Packet> {
       // The first alternate matches everything legal and
       // the second matches everything illegal.
       //
-      // If it doesn't match, then we have not received
-      // either the full sequence or an illegal sequence.
+      // If it doesn't match, the sequence is unterminated.
       // If it does match, the presence of field 4 tells
       // us whether it was legal or illegal.
-
-      if (match === null) return { value: null, done: true };
 
       // match is an array
       // 0 - total match
@@ -177,8 +169,8 @@ export class Parser implements IterableIterator<Packet> {
       // 3 - command
       // 4 - illegal char
 
-      if (match[4]) {
-        // Illegal sequence, just remove the ESC
+      if (match === null || match[4]) {
+        // Unterminated or illegal sequence, just remove the ESC
         pkt.kind = PacketKind.ESC;
         pkt.text = '\x1b';
         this.lastIndex += 1;
@@ -199,8 +191,6 @@ export class Parser implements IterableIterator<Packet> {
 
     // handle OSC
     if (nextChar === ']') {
-      if (len < 4) return { value: null, done: true };
-
       // only OSC 8 (hyperlinks) is supported
       if (input.charAt(start + 2) !== '8' || input.charAt(start + 3) !== ';') {
         // This is not a match, so we'll just treat it as ESC
@@ -211,19 +201,17 @@ export class Parser implements IterableIterator<Packet> {
       }
 
       // Same approach as CSI: the first alternate matches a legal sequence,
-      // the second an illegal one, and no match means the sequence is incomplete.
+      // the second an illegal one, and no match means the sequence is unterminated.
       oscRegex.lastIndex = start;
       const match = oscRegex.exec(input);
-
-      if (match === null) return { value: null, done: true };
 
       // match is an array
       // 0 - total match
       // 1 - url
       // 2 - terminator of an illegal sequence
 
-      if (match[2]) {
-        // Illegal sequence, just remove the ESC
+      if (match === null || match[2]) {
+        // Unterminated or illegal sequence, just remove the ESC
         pkt.kind = PacketKind.ESC;
         pkt.text = '\x1b';
         this.lastIndex += 1;
@@ -239,7 +227,7 @@ export class Parser implements IterableIterator<Packet> {
     }
 
     // nextChar is '(', which specifies the character set and
-    // should just be ignored. We have at least 3, so drop the sequence
+    // should just be ignored, so drop the sequence
     pkt.kind = PacketKind.Unknown;
     this.lastIndex += 3;
     return { value: pkt, done: false };
