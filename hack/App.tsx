@@ -87,6 +87,14 @@ const sgrParameters: [number, string, string?][] = [
   [107, 'Background color - bright white'],
 ];
 
+const hyperlinkExamples: [string, string][] = [
+  ['Link', 'see \x1b]8;;https://example.com\x1b\\link text\x1b]8;;\x1b\\ after'],
+  ['Link with BEL terminator', '\x1b]8;;https://example.com\x07link text\x1b]8;;\x07'],
+  ['Styles inside link', '\x1b]8;;https://example.com\x07plain \x1b[1;31mbold red\x1b[0m plain\x1b]8;;\x07'],
+  ['Link inside styles', '\x1b[32mgreen \x1b]8;;https://example.com\x07link\x1b]8;;\x07 green\x1b[0m'],
+  ['Unsafe URL (plain text)', '\x1b]8;;javascript:alert(1)\x07link text\x1b]8;;\x07'],
+];
+
 const DisplayRawInput = ({ data }: { data: string }) => (
   <>
     {data.replaceAll('\x1b', '\\x1b')}
@@ -124,7 +132,7 @@ function App() {
         <div><label>Test:</label></div>
         <input className="h-[30px] w-[800px] border border-input dark:text-gray-900" onChange={handleTestChange}></input>
         <div className="h-[30px] leading-[30px] mb-5">
-          <AnsiHtml text={testStr} />
+          <AnsiHtml hyperlinks text={testStr} />
         </div>
       </div>
       <div className="mb-2 font-semibold">Supported SGR parameters:</div>
@@ -149,6 +157,29 @@ function App() {
               </tr>
             );
           })}
+        </tbody>
+      </table>
+      <div className="mt-10 mb-2 font-semibold">OSC 8 Hyperlinks:</div>
+      <table className="[&_th]:px-2 [&_td]:px-2 text-sm">
+        <thead>
+          <tr>
+            <th className="text-left">Name</th>
+            <th className="text-left">Raw Input</th>
+            <th className="text-left">hyperlinks: false</th>
+            <th className="text-left">hyperlinks: true</th>
+            <th className="text-left">{'hyperlinks: { target: \'_blank\', className: \'text-blue-600 underline\' }'}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {hyperlinkExamples.map(([name, example]) => (
+            <tr key={name}>
+              <td>{name}</td>
+              <td><DisplayRawInput data={example} /></td>
+              <td><AnsiHtml text={example} /></td>
+              <td><AnsiHtml hyperlinks text={example} /></td>
+              <td><AnsiHtml hyperlinks={{ target: '_blank', className: 'text-blue-600 underline' }} text={example} /></td>
+            </tr>
+          ))}
         </tbody>
       </table>
       <div className="mt-10 mb-2 font-semibold">Extended Color Palette (0-255):</div>

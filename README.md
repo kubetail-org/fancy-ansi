@@ -19,6 +19,7 @@ To solve these problems and make something that integrated nicely into our front
 
 * Supports easy customization using CSS variables
 * Supports almost all SGR codes
+* Supports OSC 8 hyperlinks (opt-in)
 * Includes a Tailwind plugin (v3 and v4) that enables support for easy theming
 * Includes a React component for easy use in a React environment
 * Includes useful utilities like `hasAnsi()` and `stripAnsi()` that come in handy when working with ANSI
@@ -85,6 +86,40 @@ You can configure Fancy-ANSI using CSS variables. For example, to invert blacks 
 ```
 
 The full list of supported variables can be found in the [SGR Parameters](#sgr-parameters) section below.
+
+## Hyperlinks
+
+Terminals render [OSC 8 hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda) as clickable links. Tools such as `ls --hyperlink`, `gcc`, `systemd` and `cargo` emit them. By default, Fancy-ANSI renders only the link text. To render links as `<a>` tags, enable the `hyperlinks` option:
+
+```typescript
+import { FancyAnsi } from 'fancy-ansi';
+
+const fancyAnsi = new FancyAnsi({ hyperlinks: true });
+
+fancyAnsi.toHtml('see \x1b]8;;https://example.com\x1b\\link text\x1b]8;;\x1b\\ after');
+// => 'see <a href="https://example.com" rel="noopener noreferrer nofollow">link text</a> after'
+```
+
+With React, use the `hyperlinks` prop:
+
+```jsx
+<AnsiHtml hyperlinks text={text} />
+```
+
+Only `http:` and `https:` URLs become links. Other URLs, such as `javascript:` or `data:`, render as plain text. Links always get `rel="noopener noreferrer nofollow"`. To set `target` or `class`, pass an options object instead of `true`:
+
+```typescript
+const fancyAnsi = new FancyAnsi({
+  hyperlinks: { target: '_blank', className: 'ansi-link' },
+});
+
+fancyAnsi.toHtml('\x1b]8;;https://example.com\x07link\x1b]8;;\x07');
+// => '<a href="https://example.com" rel="noopener noreferrer nofollow" target="_blank" class="ansi-link">link</a>'
+```
+
+Links have no inline styles, so your page's CSS decides how they look. SGR codes inside a link still apply.
+
+**Enable this only if you trust the input.** The URL comes from the input, so link text can show one URL while the link points to another. If you render output you don't control, such as logs, leave this option off.
 
 ## SGR Parameters
 
@@ -267,6 +302,12 @@ You can see some example implementations in the [`examples/`](examples/) directo
 
 ```
 FancyAnsi
+
+  constructor(options)
+    * @param {Object} [options]
+    * @param {boolean|Object} [options.hyperlinks] - Render OSC 8 hyperlinks as <a> tags (http(s) URLs only)
+    * @param {string} [options.hyperlinks.target] - Value of the `target` attribute
+    * @param {string} [options.hyperlinks.className] - Value of the `class` attribute
 
   toHtml(input)
     * @param {string} input - The input string

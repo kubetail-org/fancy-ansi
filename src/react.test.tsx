@@ -36,6 +36,20 @@ describe('AnsiHtml', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
+  it('renders hyperlinks when enabled', () => {
+    const x = '\x1b]8;;https://example.com\x07link\x1b]8;;\x07';
+    const { container } = render(<AnsiHtml hyperlinks text={x} />);
+    const link = container.querySelector('a');
+    expect(link?.getAttribute('href')).toEqual('https://example.com');
+    expect(link?.textContent).toEqual('link');
+  });
+
+  it('passes through hyperlink options', () => {
+    const x = '\x1b]8;;https://example.com\x07link\x1b]8;;\x07';
+    const { asFragment } = render(<AnsiHtml hyperlinks={{ target: '_blank', className: 'link' }} text={x} />);
+    expect(asFragment()).toMatchSnapshot();
+  });
+
   it.each([
     '<img src="x" onerror=\'alert(1)\'>',
     '\x1b[1m<script>alert(1)</script>',
@@ -47,6 +61,23 @@ describe('AnsiHtml', () => {
     container.querySelectorAll('span *').forEach((el) => {
       expect(el.tagName).toEqual('SPAN');
       expect(el.getAttributeNames()).toEqual(['style']);
+    });
+  });
+
+  it.each([
+    '\x1b]8;;javascript:alert(1)\x07<b>link</b>\x1b]8;;\x07',
+    '\x1b]8;;https://x/"onmouseover="alert(1)\x07link\x1b]8;;\x07',
+    '\x1b]8;;https://x/\x07\x1b[1m<img src=x onerror=alert(1)>\x1b]8;;\x07',
+  ])('renders untrusted hyperlinks as safe links: %j', (text) => {
+    const { container } = render(<AnsiHtml hyperlinks={{ target: '_blank" onclick="alert(1)' }} text={text} />);
+    container.querySelectorAll('span *').forEach((el) => {
+      if (el.tagName === 'A') {
+        expect(el.getAttributeNames()).toEqual(['href', 'rel', 'target']);
+        expect(el.getAttribute('href')).toMatch(/^https?:/);
+      } else {
+        expect(el.tagName).toEqual('SPAN');
+        expect(el.getAttributeNames()).toEqual(['style']);
+      }
     });
   });
 });

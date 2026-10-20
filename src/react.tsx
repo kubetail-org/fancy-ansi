@@ -15,19 +15,25 @@
 import type { CSSProperties } from 'react';
 
 import { FancyAnsi } from '@/main';
-
-const fancyAnsi = new FancyAnsi();
+import type { FancyAnsiOptions } from '@/main';
 
 export type AnsiHtmlProps = {
   className?: string;
+  hyperlinks?: FancyAnsiOptions['hyperlinks'];
   text?: string;
   style?: CSSProperties;
 };
 
-export const AnsiHtml = ({ className, style, text = '' }: AnsiHtmlProps) => (
+export const AnsiHtml = ({
+  className,
+  hyperlinks,
+  style,
+  text = '',
+}: AnsiHtmlProps) => (
+  // constructing FancyAnsi is cheap, so a fresh one per render tracks `hyperlinks`
   <span
     className={className}
     style={style}
-    dangerouslySetInnerHTML={{ __html: fancyAnsi.toHtml(text) }}
+    dangerouslySetInnerHTML={{ __html: new FancyAnsi({ hyperlinks }).toHtml(text) }}
   />
 );
