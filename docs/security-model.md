@@ -74,7 +74,7 @@ leave a lone ESC, unterminated OSC payloads and C0 characters behind, and it str
 
 **It does not bound work.** It has no input size limit and no time budget. A consumer that renders
 untrusted input should cap length per call. A consumer that renders logs should convert one line at
-a time.
+a time. The README's [Output size](../README.md#output-size) section tells consumers the same.
 
 ## How this is recorded
 

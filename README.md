@@ -121,6 +121,12 @@ Links have no inline styles, so your page's CSS decides how they look. SGR codes
 
 **Enable this only if you trust the input.** The URL comes from the input, so link text can show one URL while the link points to another. If you render output you don't control, such as logs, leave this option off.
 
+## Output size
+
+`toHtml()` output can be up to 95× the size of its input. Each SGR sequence closes the current `<span>` and opens a new one with the full style, even when the style did not change. A 4-byte sequence such as `\x1b[1m` can emit up to 377 bytes.
+
+Conversion is fast, but inserting a large result into the DOM can freeze the page. If you render input you don't control, cap its length per call. If you render logs, convert one line at a time.
+
 ## SGR Parameters
 
 | n   | Name                                     | Supported          | CSS Variables                | Default   |
@@ -312,6 +318,7 @@ FancyAnsi
   toHtml(input)
     * @param {string} input - The input string
     * @returns {string} Browser-safe HTML string containing stylized ANSI content
+    * Output can be up to 95x the input length (see "Output size")
 
 Example:
 
