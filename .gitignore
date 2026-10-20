@@ -8,7 +8,9 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+dist
 dist-ssr
+coverage
 *.local
 
 # Editor directories and files
@@ -21,3 +23,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Sandbox (scripts/sandbox-dev-setup.sh on main)
+.sandbox-linux
+.pnpm-store

@@ -1,0 +1,7 @@
+allowBuilds:
+  esbuild: true
+  unrs-resolver: true
+
+# The demo should pick up a fancy-ansi release as soon as it is published
+minimumReleaseAgeExclude:
+  - fancy-ansi
