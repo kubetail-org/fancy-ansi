@@ -100,12 +100,21 @@ describe('FancyAnsi', () => {
   });
 
   it.each([
+    '\x1b[38;5;mx',
     '\x1b[38;5;256mx',
     '\x1b[38;5;1;2mx',
+    '\x1b[38;2;1mx',
     '\x1b[38;2;1;2mx',
+    '\x1b[38;2;1;2;3;4mx',
   ])('ignores malformed extended colors: %j', (input) => {
     const fancyAnsi = new FancyAnsi();
     expect(fancyAnsi.toHtml(input)).toEqual('x');
+  });
+
+  it('treats other codes ending in 8 as separate codes', () => {
+    const fancyAnsi = new FancyAnsi();
+    const output = fancyAnsi.toHtml('\x1b[28;5;1mx');
+    expect(output).toEqual('<span style="font-weight:var(--ansi-bold-font-weight, 600);">x</span>');
   });
 
   it('keeps text after a CSI with a non-ASCII character', () => {
