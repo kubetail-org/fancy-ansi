@@ -9,7 +9,7 @@ Small TypeScript library that converts ANSI escape sequences to HTML. Ships four
 - `pnpm lint` — ESLint over `src/`
 - `pnpm test run` — Vitest, single run (`pnpm test` watches)
 - `pnpm coverage` — single run with coverage; fails below 100%
-- `pnpm build` — type-check and build `dist/`
+- `pnpm build` — type-check and build `dist/` with tsdown (`tsdown.config.ts`); Vite only serves the playground and tests
 - `pnpm dev` — Vite playground in `hack/`
 
 CI runs lint, coverage and build on every pull request.

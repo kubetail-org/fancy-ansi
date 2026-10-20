@@ -13,57 +13,16 @@
 // limitations under the License.
 
 /// <reference types="vitest" />
-import typescript from '@rollup/plugin-typescript';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
-import { readFileSync } from 'fs';
 import { resolve } from 'path';
-import autoExternal from 'rollup-plugin-auto-external';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  plugins: [
-    react(),
-    tailwindcss(),
-    {
-      name: 'plugin-css',
-      apply: 'build',
-      generateBundle() {
-        this.emitFile({
-          type: 'asset',
-          fileName: 'plugin.css',
-          source: readFileSync(resolve(import.meta.dirname, 'src/plugin.css'), 'utf8'),
-        });
-      },
-    },
-  ],
+  plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
       '@': resolve(import.meta.dirname, './src'),
-    },
-  },
-  build: {
-    lib: {
-      entry: [
-        resolve(import.meta.dirname, 'src/main.ts'),
-        resolve(import.meta.dirname, 'src/colors.ts'),
-        resolve(import.meta.dirname, 'src/plugin.ts'),
-        resolve(import.meta.dirname, 'src/react.tsx'),
-      ],
-      name: 'fancyAnsi',
-      formats: ["es", "cjs"],
-    },
-    rollupOptions: {
-      plugins: [
-        typescript({
-          tsconfig: "tsconfig.build.json",
-          sourceMap: false,
-          declaration: true,
-          outDir: "dist"
-        }),
-        autoExternal(),
-      ],
-      external: ['react', 'react-dom', 'react/jsx-runtime'],
     },
   },
   test: {
