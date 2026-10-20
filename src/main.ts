@@ -189,13 +189,19 @@ function processSGRPacket(packet: Packet, attrs: StyleAttrs) {
   });
 }
 
+// Every ANSI sequence starts with ESC or the 8-bit CSI. Checking for them with
+// includes() is much faster than running the regex over plain text.
+function hasEscapeChar(input: string): boolean {
+  return input.includes('\x1b') || input.includes('\x9b');
+}
+
 /**
  * Check if a given string has ANSI markup
  * @param {string} input - The input string
  * @returns {boolean} Whether or not the input string has ANSI markup
  */
 export function hasAnsi(input: string): boolean {
-  return hasAnsiRegex.test(input);
+  return hasEscapeChar(input) && hasAnsiRegex.test(input);
 }
 
 /**
@@ -204,6 +210,7 @@ export function hasAnsi(input: string): boolean {
  * @returns {string} The input string with ANSI escape codes replaced with ''
  */
 export function stripAnsi(input: string): string {
+  if (!hasEscapeChar(input)) return input;
   return input.replaceAll(ansiRegex, '');
 }
 
