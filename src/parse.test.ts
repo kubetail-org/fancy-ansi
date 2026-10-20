@@ -108,17 +108,35 @@ describe('parse', () => {
     expect(packets[0].text).toEqual('1;3;4');
   });
 
-  it.each([
-    ['escape', '\x1b['],
-    ['CSI', '\x1b[1'],
-    ['OSC', '\x1b]8'],
-    ['OSC without terminator', '\x1b]8;;url'],
-    ['OSC with ESC but no terminator', '\x1b]8;;url\x1b[1m'],
-  ])('drops incomplete %s at end of input', (_, input) => {
-    expect(parse(input)).toEqual([]);
+  it('parses the tail of an unterminated OSC', () => {
+    const packets = parse('\x1b]8;;url\x1b[1mtail');
+    expect(packets.map((p) => [p.kind, p.text])).toEqual([
+      [PacketKind.ESC, '\x1b'],
+      [PacketKind.Text, ']8;;url'],
+      [PacketKind.SGR, '1'],
+      [PacketKind.Text, 'tail'],
+    ]);
+  });
+
+  it('parses repeated unterminated OSCs in linear time', () => {
+    // Each attempt must stop at the next ESC. Scanning to the end of the
+    // input instead makes this quadratic: seconds rather than milliseconds.
+    const input = `\x1b]8;${'a'.repeat(100)}`.repeat(8000);
+    const start = performance.now();
+    const packets = parse(input);
+    expect(performance.now() - start).toBeLessThan(1000);
+    expect(packets).toHaveLength(16000);
   });
 
   it.each([
+    ['lone ESC', '\x1b'],
+    ['incomplete escape', '\x1b['],
+    ['incomplete character set', '\x1b('],
+    ['incomplete CSI', '\x1b[1'],
+    ['unterminated CSI', '\x1b[1 2 3 hidden'],
+    ['incomplete OSC', '\x1b]8'],
+    ['unterminated OSC', '\x1b]8;hidden tail'],
+    ['OSC without terminator', '\x1b]8;;url'],
     ['single ESC', '\x1bcx'],
     ['illegal CSI', '\x1b[1\x01'],
     ['CSI with non-ASCII char', '\x1b[\u00e9 rest'],

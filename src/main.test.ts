@@ -145,6 +145,17 @@ describe('FancyAnsi', () => {
     expect(fancyAnsi.toHtml('a\x1b[\u00e9 rest\nnext')).toEqual('a[\u00e9 rest\nnext');
   });
 
+  it.each([
+    ['visible \x1b]8;hidden tail', 'visible ]8;hidden tail'],
+    ['visible \x1b[1 2 3 hidden', 'visible [1 2 3 hidden'],
+    ['visible \x1b[', 'visible ['],
+    ['visible \x1b]8', 'visible ]8'],
+    ['visible \x1b', 'visible '],
+  ])('keeps the tail of an unterminated sequence: %j', (input, expected) => {
+    const fancyAnsi = new FancyAnsi();
+    expect(fancyAnsi.toHtml(input)).toEqual(expected);
+  });
+
   it('ignores non-SGR escape sequences', () => {
     const fancyAnsi = new FancyAnsi();
     const output = fancyAnsi.toHtml('a\x1b[2Kb\x1b(Bc');
