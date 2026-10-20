@@ -113,7 +113,6 @@ describe('parse', () => {
     ['CSI', '\x1b[1'],
     ['OSC', '\x1b]8'],
     ['OSC without terminator', '\x1b]8;;url'],
-    ['OSC with ESC but no terminator', '\x1b]8;;url\x1b[1m'],
   ])('drops incomplete %s at end of input', (_, input) => {
     expect(parse(input)).toEqual([]);
   });
@@ -133,6 +132,23 @@ describe('parse', () => {
     expect(packets[0].kind).toEqual(PacketKind.ESC);
     expect(packets[0].text).toEqual('\x1b');
     expect(packets.slice(1).map((p) => p.text).join('')).toEqual(input.slice(1));
+  });
+
+  it('parses an escape that ends an illegal OSC', () => {
+    const packets = parse('\x1b]8;;url\x1b[1m');
+    expect(packets.map((p) => [p.kind, p.text])).toEqual([
+      [PacketKind.ESC, '\x1b'],
+      [PacketKind.Text, ']8;;url'],
+      [PacketKind.SGR, '1'],
+    ]);
+  });
+
+  it('parses repeated illegal OSC introducers in linear time', () => {
+    // Quadratic parsing takes seconds on this input
+    const input = '\x1b]8;'.repeat(100000) + '\n';
+    const start = performance.now();
+    expect(parse(input).length).toEqual(200000);
+    expect(performance.now() - start).toBeLessThan(500);
   });
 
   it('returns packet of kind `Unknown` for character set sequences', () => {
