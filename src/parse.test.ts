@@ -141,4 +141,20 @@ describe('parse', () => {
     expect(packets[0].kind).toEqual(PacketKind.Unknown);
     expect(packets[1].text).toEqual('x');
   });
+
+  it('parses correctly when two parsers are interleaved', () => {
+    const a = new Parser('xx\x1b[1mab\x1b]8;;http://a.b\x07c');
+    const b = new Parser('\x1b[32my\x1b]8;;\x07');
+    const packets = [a.next(), b.next(), a.next(), b.next(), a.next(), b.next(), a.next(), a.next()];
+    expect(packets.map((p) => [p.value.kind, p.value.text, p.value.url])).toEqual([
+      [PacketKind.Text, 'xx', ''],
+      [PacketKind.SGR, '32', ''],
+      [PacketKind.SGR, '1', ''],
+      [PacketKind.Text, 'y', ''],
+      [PacketKind.Text, 'ab', ''],
+      [PacketKind.OSCURL, '', ''],
+      [PacketKind.OSCURL, '', 'http://a.b'],
+      [PacketKind.Text, 'c', ''],
+    ]);
+  });
 });
