@@ -153,7 +153,7 @@ Conversion is fast, but inserting a large result into the DOM can freeze the pag
 | 19  | Alternative font 9                       | :heavy_check_mark: | --ansi-font-9                |           |
 | 20  | Gothic                                   |                    |                              |           |
 | 21  | Double underline                         | :heavy_check_mark: |                              |           |
-| 22  | Bold off                                 | :heavy_check_mark: |                              |           |
+| 22  | Bold and dim off                         | :heavy_check_mark: |                              |           |
 | 23  | Italic off                               | :heavy_check_mark: |                              |           |
 | 24  | Underline off                            | :heavy_check_mark: |                              |           |
 | 25  | Blink off                                |                    |                              |           |

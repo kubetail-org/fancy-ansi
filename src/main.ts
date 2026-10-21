@@ -76,7 +76,7 @@ styleAttrsMap[21] = (attrs) => {
   attrs.set(StyleAttrsKeys.TextDecorationLine, 'underline');
   attrs.set(StyleAttrsKeys.TextDecorationStyle, 'double');
 };
-styleAttrsMap[22] = StyleAttrs.delete(StyleAttrsKeys.FontWeight);
+styleAttrsMap[22] = StyleAttrs.delete(StyleAttrsKeys.FontWeight, StyleAttrsKeys.Opacity);
 styleAttrsMap[23] = StyleAttrs.delete(StyleAttrsKeys.FontStyle);
 styleAttrsMap[24] = StyleAttrs.removeVal(StyleAttrsKeys.TextDecoration, 'underline');
 styleAttrsMap[28] = StyleAttrs.delete(StyleAttrsKeys.Visibility);
