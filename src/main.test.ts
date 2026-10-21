@@ -133,15 +133,33 @@ describe('FancyAnsi', () => {
   });
 
   it.each([
+    '\x1b[38mx',
+    '\x1b[38;5mx',
     '\x1b[38;5;mx',
     '\x1b[38;5;256mx',
-    '\x1b[38;5;1;2mx',
     '\x1b[38;2;1mx',
     '\x1b[38;2;1;2mx',
-    '\x1b[38;2;1;2;3;4mx',
+    '\x1b[38;2;1;;3mx',
+    '\x1b[38;2;1;2;256mx',
+    '\x1b[38;9;1mx',
   ])('ignores malformed extended colors: %j', (input) => {
     const fancyAnsi = new FancyAnsi();
     expect(fancyAnsi.toHtml(input)).toEqual('x');
+  });
+
+  it.each([
+    ['\x1b[1;38;2;255;0;0mx', 'color:rgb(255,0,0);font-weight:var(--ansi-bold-font-weight, 600);'],
+    ['\x1b[38;5;196;1mx', 'color:rgb(255,0,0);font-weight:var(--ansi-bold-font-weight, 600);'],
+    ['\x1b[38;5;1;2mx', 'color:var(--ansi-red, #cc0000);opacity:var(--ansi-dim-opacity, 0.7);'],
+    ['\x1b[38;2;1;2;3;4mx', 'color:rgb(1,2,3);text-decoration:underline;'],
+    ['\x1b[48;5;21;38;2;9;8;7;4mx', 'background-color:rgb(0,0,255);color:rgb(9,8,7);text-decoration:underline;'],
+    ['\x1b[38;5;256;1mx', 'font-weight:var(--ansi-bold-font-weight, 600);'],
+    ['\x1b[38;5;;1mx', 'font-weight:var(--ansi-bold-font-weight, 600);'],
+    ['\x1b[38;2;1;;3;1mx', 'font-weight:var(--ansi-bold-font-weight, 600);'],
+    ['\x1b[1;38;9;4mx', 'font-weight:var(--ansi-bold-font-weight, 600);'],
+  ])('supports extended colors beside other codes: %j', (input, style) => {
+    const fancyAnsi = new FancyAnsi();
+    expect(fancyAnsi.toHtml(input)).toEqual(`<span style="${style}">x</span>`);
   });
 
   it('treats other codes ending in 8 as separate codes', () => {
