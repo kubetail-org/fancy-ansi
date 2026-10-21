@@ -122,46 +122,72 @@ function applySGRCode(code: number, attrs: StyleAttrs) {
   styleAttrsMap[code]?.(attrs);
 }
 
+// Scratch space for the parameters of one extended color
+const colorParams = [0, 0, 0];
+
 /**
- * Get the style attribute an extended color packet sets
+ * Apply the extended color at `start`, "5;n" or "2;r;g;b"; malformed colors set nothing
  * @param {string} text - The SGR parameters
- * @returns {StyleAttrsKeys | undefined} The key for "38;5;n" and "38;2;r;g;b" (also 48 and 58)
+ * @param {number} start - Where the color type starts
+ * @param {StyleAttrsKeys} key - The style attribute to set
+ * @param {StyleAttrs} attrs - The current style attributes
+ * @returns {number} The position after the color
  */
-function getExtendedColorKey(text: string): StyleAttrsKeys | undefined {
-  if (text[1] !== '8' || text[2] !== ';' || text[4] !== ';') return undefined;
-  if (text[3] !== '2' && text[3] !== '5') return undefined;
-  switch (text[0]) {
-    case '3': return StyleAttrsKeys.Color;
-    case '4': return StyleAttrsKeys.BackgroundColor;
-    case '5': return StyleAttrsKeys.TextDecorationColor;
-    default: return undefined;
+function processExtendedColor(
+  text: string,
+  start: number,
+  key: StyleAttrsKeys,
+  attrs: StyleAttrs,
+): number {
+  const n = text.length;
+
+  // "5;" is followed by a palette index, "2;" by r, g and b
+  let count = 0;
+  if (text.charCodeAt(start + 1) === SEMICOLON) {
+    const type = text.charCodeAt(start);
+    if (type === ZERO + 5) count = 1;
+    else if (type === ZERO + 2) count = 3;
   }
+  // Without a known color type there's no telling where the color ends, so
+  // drop the rest of the packet rather than misread it as codes
+  if (count === 0) return n + 1;
+
+  // Every parameter is read even when one is invalid, so the codes after the
+  // color are still applied
+  let i = start + 2;
+  let valid = true;
+  for (let k = 0; k < count; k += 1) {
+    let value = -1;
+    for (; i < n; i += 1) {
+      const c = text.charCodeAt(i);
+      if (c === SEMICOLON) break;
+      value = (value < 0 ? 0 : value * 10) + (c - ZERO);
+    }
+    i += 1;
+    // empty, missing and out-of-range parameters are all invalid
+    if (value < 0 || value > 255) valid = false;
+    colorParams[k] = value;
+  }
+
+  if (valid) {
+    if (count === 1) attrs.set(key, palette256[colorParams[0]]);
+    else attrs.set(key, `rgb(${colorParams[0]},${colorParams[1]},${colorParams[2]})`);
+  }
+  return i;
 }
 
 /**
- * Apply an extended color to style attributes; malformed packets set nothing
- * @param {string} text - The SGR parameters
- * @param {StyleAttrsKeys} key - The style attribute to set
- * @param {StyleAttrs} attrs - The current style attributes
+ * Get the style attribute an extended color code sets
+ * @param {number} code - The SGR code
+ * @returns {StyleAttrsKeys | undefined} The key for 38, 48 and 58
  */
-function processExtendedColor(text: string, key: StyleAttrsKeys, attrs: StyleAttrs) {
-  if (text[3] === '5') {
-    // exactly one parameter: the palette index
-    let index = 0;
-    for (let i = 5; i < text.length; i += 1) {
-      const c = text.charCodeAt(i);
-      if (c === SEMICOLON) return;
-      index = index * 10 + (c - ZERO);
-    }
-    if (text.length > 5 && index < 256) attrs.set(key, palette256[index]);
-    return;
+function getExtendedColorKey(code: number): StyleAttrsKeys | undefined {
+  switch (code) {
+    case 38: return StyleAttrsKeys.Color;
+    case 48: return StyleAttrsKeys.BackgroundColor;
+    case 58: return StyleAttrsKeys.TextDecorationColor;
+    default: return undefined;
   }
-
-  // exactly three parameters: r, g and b, kept as written
-  const g = text.indexOf(';', 5);
-  const b = text.indexOf(';', g + 1);
-  if (g === -1 || b === -1 || text.indexOf(';', b + 1) !== -1) return;
-  attrs.set(key, `rgb(${text.slice(5, g)},${text.slice(g + 1, b)},${text.slice(b + 1)})`);
 }
 
 /**
@@ -171,26 +197,24 @@ function processExtendedColor(text: string, key: StyleAttrsKeys, attrs: StyleAtt
  */
 function processSGRPacket(packet: Packet, attrs: StyleAttrs) {
   const { text } = packet;
-
-  const key = getExtendedColorKey(text);
-  if (key !== undefined) {
-    processExtendedColor(text, key, attrs);
-    return;
-  }
+  const n = text.length;
 
   // Parameters are digits and ';' only, so read each code in place.
   // An empty parameter counts as 0.
-  let code = 0;
-  for (let i = 0; i < text.length; i += 1) {
-    const c = text.charCodeAt(i);
-    if (c === SEMICOLON) {
-      applySGRCode(code, attrs);
-      code = 0;
-    } else {
+  let i = 0;
+  while (i <= n) {
+    let code = 0;
+    for (; i < n; i += 1) {
+      const c = text.charCodeAt(i);
+      if (c === SEMICOLON) break;
       code = code * 10 + (c - ZERO);
     }
+    i += 1; // past the ';', or past the end once the last code is read
+
+    const key = getExtendedColorKey(code);
+    if (key === undefined) applySGRCode(code, attrs);
+    else i = processExtendedColor(text, i, key, attrs);
   }
-  applySGRCode(code, attrs);
 }
 
 // Every ANSI sequence starts with ESC or the 8-bit CSI. Checking for them with
