@@ -102,6 +102,14 @@ describe('FancyAnsi', () => {
     expect(fancyAnsi.toHtml('x\x1b[31m')).toEqual('x');
   });
 
+  it('turns off bold and dim with code 22', () => {
+    const fancyAnsi = new FancyAnsi();
+    expect(fancyAnsi.toHtml('\x1b[2mx\x1b[22my')).toEqual('<span style="opacity:var(--ansi-dim-opacity, 0.7);">x</span>y');
+    expect(fancyAnsi.toHtml('\x1b[1;2mx\x1b[22my')).toEqual(
+      '<span style="font-weight:var(--ansi-bold-font-weight, 600);opacity:var(--ansi-dim-opacity, 0.7);">x</span>y',
+    );
+  });
+
   it('emits one span for adjacent SGR sequences', () => {
     const fancyAnsi = new FancyAnsi();
     const output = fancyAnsi.toHtml('\x1b[1m\x1b[3mx\x1b[23m\x1b[22m');
