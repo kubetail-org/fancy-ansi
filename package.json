@@ -13,7 +13,7 @@
   "dependencies": {
     "@base-ui/react": "^1.9.0",
     "@kubetail/ui": "^3.0.0",
-    "fancy-ansi": "^0.2.1",
+    "fancy-ansi": "0.2.2",
     "lucide-react": "^1.59.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
