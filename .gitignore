@@ -16,6 +16,7 @@ coverage
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+!.vscode/settings.json
 .idea
 .DS_Store
 *.suo
@@ -35,3 +36,6 @@ CLAUDE.local.md
 # Sandbox (scripts/sandbox-dev-setup.sh)
 .sandbox-linux
 .pnpm-store
+
+# custom
+.worktrees
