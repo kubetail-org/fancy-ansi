@@ -68,7 +68,11 @@ const sgrParameters: [number, string, string?][] = [
   [59, 'Default underline color', '\x1b[4m\x1b[58;5;1mOn\x1b[59mOff\x1b[0m'],
   [73, 'Superscript', 'Super\x1b[73mscript\x1b[0m'],
   [74, 'Subscript', 'Sub\x1b[74mscript\x1b[0m'],
-  [75, 'Superscript/subscript off', 'Super\x1b[73mon\x1b[75moff\x1b[0m, Sub\x1b[74mon\x1b[75moff\x1b[0m'],
+  [
+    75,
+    'Superscript/subscript off',
+    'Super\x1b[73mon\x1b[75moff\x1b[0m, Sub\x1b[74mon\x1b[75moff\x1b[0m',
+  ],
   [90, 'Foreground color - bright black'],
   [91, 'Foreground color - bright red'],
   [92, 'Foreground color - bright green'],
@@ -90,30 +94,39 @@ const sgrParameters: [number, string, string?][] = [
 const hyperlinkExamples: [string, string][] = [
   ['Link', 'see \x1b]8;;https://example.com\x1b\\link text\x1b]8;;\x1b\\ after'],
   ['Link with BEL terminator', '\x1b]8;;https://example.com\x07link text\x1b]8;;\x07'],
-  ['Styles inside link', '\x1b]8;;https://example.com\x07plain \x1b[1;31mbold red\x1b[0m plain\x1b]8;;\x07'],
-  ['Link inside styles', '\x1b[32mgreen \x1b]8;;https://example.com\x07link\x1b]8;;\x07 green\x1b[0m'],
+  [
+    'Styles inside link',
+    '\x1b]8;;https://example.com\x07plain \x1b[1;31mbold red\x1b[0m plain\x1b]8;;\x07',
+  ],
+  [
+    'Link inside styles',
+    '\x1b[32mgreen \x1b]8;;https://example.com\x07link\x1b]8;;\x07 green\x1b[0m',
+  ],
   ['Unsafe URL (plain text)', '\x1b]8;;javascript:alert(1)\x07link text\x1b]8;;\x07'],
 ];
 
 const DisplayRawInput = ({ data }: { data: string }) => (
   <>
     {data.replaceAll('\x1b', '\\x1b')}
-    <a
+    <button
+      type="button"
       className="ml-1 text-sm text-blue-500 underline cursor-pointer"
-      onClick={() => navigator.clipboard.writeText(data)}
+      onClick={() => {
+        void navigator.clipboard.writeText(data);
+      }}
     >
       copy
-    </a>
+    </button>
   </>
 );
 
+const handleThemeChange = (ev: React.ChangeEvent<HTMLSelectElement>) => {
+  if (ev.target.value === 'dark') document.documentElement.classList.add('dark');
+  else document.documentElement.classList.remove('dark');
+};
+
 function App() {
   const [testStr, setTestStr] = useState<string>();
-
-  const handleThemeChange = (ev: React.ChangeEvent<HTMLSelectElement>) => {
-    if (ev.target.value === 'dark') document.documentElement.classList.add('dark');
-    else document.documentElement.classList.remove('dark');
-  };
 
   const handleTestChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
     setTestStr(ev.target.value);
@@ -122,15 +135,23 @@ function App() {
   return (
     <div className="p-2">
       <div className="mb-2">
-        <label className="mr-1">Theme:</label>
-        <select defaultValue="light" onChange={handleThemeChange}>
+        <label htmlFor="theme" className="mr-1">
+          Theme:
+        </label>
+        <select id="theme" defaultValue="light" onChange={handleThemeChange}>
           <option>light</option>
           <option>dark</option>
         </select>
       </div>
       <div>
-        <div><label>Test:</label></div>
-        <input className="h-[30px] w-[800px] border border-input dark:text-gray-900" onChange={handleTestChange}></input>
+        <div>
+          <label htmlFor="test">Test:</label>
+        </div>
+        <input
+          id="test"
+          className="h-[30px] w-[800px] border border-input dark:text-gray-900"
+          onChange={handleTestChange}
+        />
         <div className="h-[30px] leading-[30px] mb-5">
           <AnsiHtml hyperlinks text={testStr} />
         </div>
@@ -152,8 +173,12 @@ function App() {
               <tr key={n}>
                 <td>{n}</td>
                 <td>{name}</td>
-                <td><DisplayRawInput data={exampleStr} /></td>
-                <td><AnsiHtml text={exampleStr} /></td>
+                <td>
+                  <DisplayRawInput data={exampleStr} />
+                </td>
+                <td>
+                  <AnsiHtml text={exampleStr} />
+                </td>
               </tr>
             );
           })}
@@ -167,17 +192,30 @@ function App() {
             <th className="text-left">Raw Input</th>
             <th className="text-left">hyperlinks: false</th>
             <th className="text-left">hyperlinks: true</th>
-            <th className="text-left">{'hyperlinks: { target: \'_blank\', className: \'text-blue-600 underline\' }'}</th>
+            <th className="text-left">
+              {"hyperlinks: { target: '_blank', className: 'text-blue-600 underline' }"}
+            </th>
           </tr>
         </thead>
         <tbody>
           {hyperlinkExamples.map(([name, example]) => (
             <tr key={name}>
               <td>{name}</td>
-              <td><DisplayRawInput data={example} /></td>
-              <td><AnsiHtml text={example} /></td>
-              <td><AnsiHtml hyperlinks text={example} /></td>
-              <td><AnsiHtml hyperlinks={{ target: '_blank', className: 'text-blue-600 underline' }} text={example} /></td>
+              <td>
+                <DisplayRawInput data={example} />
+              </td>
+              <td>
+                <AnsiHtml text={example} />
+              </td>
+              <td>
+                <AnsiHtml hyperlinks text={example} />
+              </td>
+              <td>
+                <AnsiHtml
+                  hyperlinks={{ target: '_blank', className: 'text-blue-600 underline' }}
+                  text={example}
+                />
+              </td>
             </tr>
           ))}
         </tbody>
@@ -202,7 +240,7 @@ function App() {
           </tr>
         </thead>
         <tbody>
-          {Array.from({ length: 256 }, (_, i) => i).map(i => {
+          {Array.from({ length: 256 }, (_, i) => i).map((i) => {
             const exampleStrFg = `\x1b[38;5;${i}mColor Code - ${i}\x1b[0m`;
             const exampleStrBg = `\x1b[48;5;${i}mColor Code - ${i}\x1b[0m`;
             const exampleStrUl = `\x1b[4m\x1b[58;5;${i}mColor Code - ${i}\x1b[0m`;
@@ -210,19 +248,31 @@ function App() {
             return (
               <tr key={i}>
                 <td>{i}</td>
-                <td><DisplayRawInput data={exampleStrFg} /></td>
-                <td><AnsiHtml text={exampleStrFg} /></td>
-                <td><DisplayRawInput data={exampleStrBg} /></td>
-                <td><AnsiHtml text={exampleStrBg} /></td>
-                <td><DisplayRawInput data={exampleStrUl} /></td>
-                <td><AnsiHtml text={exampleStrUl} /></td>
+                <td>
+                  <DisplayRawInput data={exampleStrFg} />
+                </td>
+                <td>
+                  <AnsiHtml text={exampleStrFg} />
+                </td>
+                <td>
+                  <DisplayRawInput data={exampleStrBg} />
+                </td>
+                <td>
+                  <AnsiHtml text={exampleStrBg} />
+                </td>
+                <td>
+                  <DisplayRawInput data={exampleStrUl} />
+                </td>
+                <td>
+                  <AnsiHtml text={exampleStrUl} />
+                </td>
               </tr>
-            )
+            );
           })}
         </tbody>
       </table>
     </div>
-  )
+  );
 }
 
 export default App;

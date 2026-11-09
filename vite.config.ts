@@ -13,9 +13,10 @@
 // limitations under the License.
 
 /// <reference types="vitest" />
+import { resolve } from 'path';
+
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
-import { resolve } from 'path';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
@@ -34,5 +35,5 @@ export default defineConfig({
       exclude: ['src/**/*.test.{ts,tsx}', 'src/ansi-regex.ts'],
       thresholds: { 100: true },
     },
-  }
+  },
 });

@@ -1,0 +1,156 @@
+// Every rule is an error: `denyWarnings` fails the run on a warning too.
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["eslint", "typescript", "unicorn", "oxc", "react", "jsx-a11y", "import", "vitest"],
+  "options": {
+    "typeAware": true,
+    "denyWarnings": true,
+    "reportUnusedDisableDirectives": "error",
+    "respectEslintDisableDirectives": false
+  },
+  "categories": { "correctness": "error", "suspicious": "error", "perf": "error" },
+  // Generated and vendored files. `bench/` compares loop spellings on purpose, and each
+  // example has its own lint.
+  "ignorePatterns": [
+    "src/plugin.css",
+    "src/__snapshots__/**",
+    "src/ansi-regex.ts",
+    "bench/**",
+    "examples/**"
+  ],
+  "rules": {
+    // The categories' rules, fitted to this code.
+    // The automatic JSX runtime imports React itself.
+    "react/react-in-jsx-scope": "off",
+    // Stylesheets and test setup are imported for their effect.
+    "import/no-unassigned-import": [
+      "error",
+      { "allow": ["**/*.css", "@testing-library/jest-dom"] }
+    ],
+    // Lookup tables are allocated at their length and filled by index.
+    "unicorn/no-new-array": "off",
+    // `StyleAttrs` keeps its count in `_size` behind the `size` getter.
+    "no-underscore-dangle": ["error", { "allow": ["_size"] }],
+
+    // Bugs the categories leave to `pedantic` and `restriction`.
+    "array-callback-return": "error",
+    "default-case-last": "error",
+    "eqeqeq": ["error", "always", { "null": "ignore" }],
+    "no-case-declarations": "error",
+    "no-constructor-return": "error",
+    "no-empty": "error",
+    "no-loop-func": "error",
+    "no-new-wrappers": "error",
+    "no-promise-executor-return": "error",
+    "no-prototype-builtins": "error",
+    "no-script-url": "error",
+    "no-self-compare": "error",
+    "no-template-curly-in-string": "error",
+    "radix": "error",
+    "import/no-cycle": "error",
+    "import/no-mutable-exports": "error",
+    "typescript/no-explicit-any": "error",
+    "typescript/no-unsafe-argument": "error",
+    "typescript/no-unsafe-assignment": "error",
+    "typescript/no-unsafe-call": "error",
+    "typescript/no-unsafe-function-type": "error",
+    "typescript/no-unsafe-member-access": "error",
+    "typescript/no-unsafe-return": "error",
+    "typescript/only-throw-error": "error",
+    "typescript/return-await": "error",
+
+    // Control flow and mutation a reader can follow.
+    "default-param-last": "error",
+    "no-else-return": ["error", { "allowElseIf": false }],
+    "no-labels": "error",
+    "no-lonely-if": "error",
+    "no-multi-assign": "error",
+    "no-nested-ternary": "error",
+    "no-param-reassign": [
+      "error",
+      { "props": true, "ignorePropertyModificationsFor": ["acc", "attrs"] }
+    ],
+    "no-return-assign": ["error", "always"],
+    "no-sequences": "error",
+    "no-useless-return": "error",
+    "one-var": ["error", "never"],
+
+    // Modern syntax over its older spelling.
+    "arrow-body-style": "error",
+    "no-useless-computed-key": "error",
+    "no-var": "error",
+    "object-shorthand": "error",
+    "operator-assignment": "error",
+    "prefer-arrow-callback": "error",
+    "prefer-const": ["error", { "ignoreReadBeforeAssign": true }],
+    "prefer-exponentiation-operator": "error",
+    "prefer-object-has-own": "error",
+    "prefer-object-spread": "error",
+    "prefer-rest-params": "error",
+    "prefer-spread": "error",
+    "prefer-template": "error",
+    "import/no-duplicates": "error",
+    "typescript/array-type": "error",
+    "typescript/dot-notation": "error",
+    "typescript/no-empty-object-type": "error",
+    "typescript/no-inferrable-types": "error",
+    "typescript/no-namespace": "error",
+    "typescript/prefer-find": "error",
+    "typescript/prefer-function-type": "error",
+    "typescript/prefer-includes": "error",
+    // `||` is how an empty string or a `false` falls through to the next operand.
+    "typescript/prefer-nullish-coalescing": [
+      "error",
+      { "ignorePrimitives": { "string": true, "boolean": true } }
+    ],
+    "typescript/prefer-string-starts-ends-with": "error",
+    "unicorn/prefer-at": "error",
+    "unicorn/prefer-number-properties": "error",
+    "unicorn/prefer-string-replace-all": "error",
+    "unicorn/throw-new-error": "error",
+
+    "react/button-has-type": "error",
+    "react/jsx-boolean-value": "error",
+    "react/jsx-curly-brace-presence": ["error", { "props": "never", "children": "never" }],
+    "react/jsx-fragments": "error",
+    "react/jsx-no-useless-fragment": ["error", { "allowExpressions": true }],
+    "react/self-closing-comp": "error",
+    "react/rules-of-hooks": "error",
+
+    // Type-aware rules beyond the categories.
+    "typescript/no-deprecated": "error",
+    "typescript/no-misused-promises": "error",
+    "typescript/no-misused-spread": "error",
+    "typescript/prefer-promise-reject-errors": "error",
+    "typescript/prefer-reduce-type-parameter": "error",
+    "typescript/restrict-plus-operands": "error",
+    // A union's switch lists every member, so a new one fails here. Any other switch has a `default`.
+    "typescript/switch-exhaustiveness-check": ["error", { "requireDefaultForNonUnion": true }],
+    "typescript/use-unknown-in-catch-callback-variable": "error",
+
+    // Vitest's `expect(value, message)`.
+    "vitest/valid-expect": ["error", { "maxArgs": 2 }]
+  },
+  "overrides": [
+    {
+      // ANSI escape sequences are control characters.
+      "files": ["src/parse.ts"],
+      "rules": { "no-control-regex": "off" }
+    },
+    {
+      "files": ["**/*.test.ts", "**/*.test.tsx"],
+      "rules": {
+        // A helper sits in the `describe` that uses it.
+        "unicorn/consistent-function-scoping": "off",
+        // Tests feed `javascript:` URLs to the converter to check that it drops them.
+        "no-script-url": "off",
+        // `IteratorResult` types a finished iterator's value as `any`, and tests read it.
+        "typescript/no-unsafe-argument": "off",
+        "typescript/no-unsafe-assignment": "off",
+        "typescript/no-unsafe-call": "off",
+        "typescript/no-unsafe-member-access": "off",
+        "typescript/no-unsafe-return": "off"
+      }
+    }
+  ]
+}

@@ -15,9 +15,7 @@
 import { Parser, PacketKind } from './parse';
 
 // helper method for tests
-const parse = (input: string) => {
-  return Array.from(new Parser(input));
-}
+const parse = (input: string) => Array.from(new Parser(input));
 
 describe('parse', () => {
   it('returns empty list if input string is empty', () => {
@@ -158,7 +156,12 @@ describe('parse', () => {
     const packets = parse(input);
     expect(packets[0].kind).toEqual(PacketKind.ESC);
     expect(packets[0].text).toEqual('\x1b');
-    expect(packets.slice(1).map((p) => p.text).join('')).toEqual(input.slice(1));
+    expect(
+      packets
+        .slice(1)
+        .map((p) => p.text)
+        .join(''),
+    ).toEqual(input.slice(1));
   });
 
   it('returns packet of kind `Unknown` for character set sequences', () => {
@@ -171,7 +174,16 @@ describe('parse', () => {
   it('parses correctly when two parsers are interleaved', () => {
     const a = new Parser('xx\x1b[1mab\x1b]8;;http://a.b\x07c');
     const b = new Parser('\x1b[32my\x1b]8;;\x07');
-    const packets = [a.next(), b.next(), a.next(), b.next(), a.next(), b.next(), a.next(), a.next()];
+    const packets = [
+      a.next(),
+      b.next(),
+      a.next(),
+      b.next(),
+      a.next(),
+      b.next(),
+      a.next(),
+      a.next(),
+    ];
     expect(packets.map((p) => [p.value.kind, p.value.text, p.value.url])).toEqual([
       [PacketKind.Text, 'xx', ''],
       [PacketKind.SGR, '32', ''],

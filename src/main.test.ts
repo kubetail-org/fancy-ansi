@@ -15,7 +15,8 @@
 import { FancyAnsi, hasAnsi, stripAnsi } from './main';
 
 // Everything `toHtml()` may emit: escaped text, spans with a fixed style alphabet and http(s) links
-const safeHtmlRegex = /^(?:[^<>"'&]|&(?:lt|gt|quot|#39|amp);|<\/span>|<span style="[\w #%(),.:;-]*">|<\/a>|<a href="https?:[^<>"']*" rel="noopener noreferrer nofollow"(?: target="[^<>"']*")?(?: class="[^<>"']*")?>)*$/;
+const safeHtmlRegex =
+  /^(?:[^<>"'&]|&(?:lt|gt|quot|#39|amp);|<\/span>|<span style="[\w #%(),.:;-]*">|<\/a>|<a href="https?:[^<>"']*" rel="noopener noreferrer nofollow"(?: target="[^<>"']*")?(?: class="[^<>"']*")?>)*$/;
 
 // Park-Miller PRNG, so fuzz failures are reproducible
 function prng(seed: number) {
@@ -48,46 +49,58 @@ describe('FancyAnsi', () => {
   it('adds closing tag even if reset isnt present', () => {
     const fancyAnsi = new FancyAnsi();
     const output = fancyAnsi.toHtml('\x1b[1mbold');
-    expect(output).toEqual('<span style="font-weight:var(--ansi-bold-font-weight, 600);">bold</span>');
+    expect(output).toEqual(
+      '<span style="font-weight:var(--ansi-bold-font-weight, 600);">bold</span>',
+    );
   });
 
   it('ignores extra dangling resets', () => {
     const fancyAnsi = new FancyAnsi();
     const output = fancyAnsi.toHtml('\x1b[1mbold\x1b[0m\x1b[0m');
-    expect(output).toEqual('<span style="font-weight:var(--ansi-bold-font-weight, 600);">bold</span>');
+    expect(output).toEqual(
+      '<span style="font-weight:var(--ansi-bold-font-weight, 600);">bold</span>',
+    );
   });
 
   it('treats missing code as reset', () => {
     const fancyAnsi = new FancyAnsi();
     const output = fancyAnsi.toHtml('\x1b[1mon\x1b[moff');
-    expect(output).toEqual('<span style="font-weight:var(--ansi-bold-font-weight, 600);">on</span>off');
+    expect(output).toEqual(
+      '<span style="font-weight:var(--ansi-bold-font-weight, 600);">on</span>off',
+    );
   });
 
   it('treats missing codes as reset', () => {
     const fancyAnsi = new FancyAnsi();
     const output = fancyAnsi.toHtml('\x1b[1mon\x1b[;moff');
-    expect(output).toEqual('<span style="font-weight:var(--ansi-bold-font-weight, 600);">on</span>off');
+    expect(output).toEqual(
+      '<span style="font-weight:var(--ansi-bold-font-weight, 600);">on</span>off',
+    );
   });
 
   it('ignores extra reset at start', () => {
     const fancyAnsi = new FancyAnsi();
     const output = fancyAnsi.toHtml('\x1b[0m\x1b[1mbold\x1b[0m');
-    expect(output).toEqual('<span style="font-weight:var(--ansi-bold-font-weight, 600);">bold</span>');
+    expect(output).toEqual(
+      '<span style="font-weight:var(--ansi-bold-font-weight, 600);">bold</span>',
+    );
   });
 
   it('combines and removes attributes', () => {
     const fancyAnsi = new FancyAnsi();
     const output = fancyAnsi.toHtml('\x1b[4;4;9mx\x1b[24my\x1b[29;99mz');
-    expect(output).toEqual('<span style="text-decoration:underline line-through;">x</span><span style="text-decoration:line-through;">y</span>z');
+    expect(output).toEqual(
+      '<span style="text-decoration:underline line-through;">x</span><span style="text-decoration:line-through;">y</span>z',
+    );
   });
 
   it('supports double underline, superscript and subscript', () => {
     const fancyAnsi = new FancyAnsi();
     const output = fancyAnsi.toHtml('\x1b[21mx\x1b[0;73my\x1b[74mz');
     expect(output).toEqual(
-      '<span style="text-decoration-line:underline;text-decoration-style:double;">x</span>'
-      + '<span style="font-size:var(--ansi-superscript-font-size, 80%);vertical-align:super;">y</span>'
-      + '<span style="font-size:var(--ansi-subscript-font-size, 80%);vertical-align:sub;">z</span>',
+      '<span style="text-decoration-line:underline;text-decoration-style:double;">x</span>' +
+        '<span style="font-size:var(--ansi-superscript-font-size, 80%);vertical-align:super;">y</span>' +
+        '<span style="font-size:var(--ansi-subscript-font-size, 80%);vertical-align:sub;">z</span>',
     );
   });
 
@@ -104,7 +117,9 @@ describe('FancyAnsi', () => {
 
   it('turns off bold and dim with code 22', () => {
     const fancyAnsi = new FancyAnsi();
-    expect(fancyAnsi.toHtml('\x1b[2mx\x1b[22my')).toEqual('<span style="opacity:var(--ansi-dim-opacity, 0.7);">x</span>y');
+    expect(fancyAnsi.toHtml('\x1b[2mx\x1b[22my')).toEqual(
+      '<span style="opacity:var(--ansi-dim-opacity, 0.7);">x</span>y',
+    );
     expect(fancyAnsi.toHtml('\x1b[1;2mx\x1b[22my')).toEqual(
       '<span style="font-weight:var(--ansi-bold-font-weight, 600);opacity:var(--ansi-dim-opacity, 0.7);">x</span>y',
     );
@@ -113,7 +128,9 @@ describe('FancyAnsi', () => {
   it('emits one span for adjacent SGR sequences', () => {
     const fancyAnsi = new FancyAnsi();
     const output = fancyAnsi.toHtml('\x1b[1m\x1b[3mx\x1b[23m\x1b[22m');
-    expect(output).toEqual('<span style="font-style:italic;font-weight:var(--ansi-bold-font-weight, 600);">x</span>');
+    expect(output).toEqual(
+      '<span style="font-style:italic;font-weight:var(--ansi-bold-font-weight, 600);">x</span>',
+    );
   });
 
   it('supports 256-color standard colors', () => {
@@ -131,7 +148,9 @@ describe('FancyAnsi', () => {
   it('supports 256-color grayscale', () => {
     const fancyAnsi = new FancyAnsi();
     const output = fancyAnsi.toHtml('\x1b[58;5;240mx');
-    expect(output).toEqual('<span style="text-decoration-color:var(--ansi-gray-16, rgb(88,88,88));">x</span>');
+    expect(output).toEqual(
+      '<span style="text-decoration-color:var(--ansi-gray-16, rgb(88,88,88));">x</span>',
+    );
   });
 
   it('supports truecolor', () => {
@@ -160,7 +179,10 @@ describe('FancyAnsi', () => {
     ['\x1b[38;5;196;1mx', 'color:rgb(255,0,0);font-weight:var(--ansi-bold-font-weight, 600);'],
     ['\x1b[38;5;1;2mx', 'color:var(--ansi-red, #cc0000);opacity:var(--ansi-dim-opacity, 0.7);'],
     ['\x1b[38;2;1;2;3;4mx', 'color:rgb(1,2,3);text-decoration:underline;'],
-    ['\x1b[48;5;21;38;2;9;8;7;4mx', 'background-color:rgb(0,0,255);color:rgb(9,8,7);text-decoration:underline;'],
+    [
+      '\x1b[48;5;21;38;2;9;8;7;4mx',
+      'background-color:rgb(0,0,255);color:rgb(9,8,7);text-decoration:underline;',
+    ],
     ['\x1b[38;5;256;1mx', 'font-weight:var(--ansi-bold-font-weight, 600);'],
     ['\x1b[38;5;;1mx', 'font-weight:var(--ansi-bold-font-weight, 600);'],
     ['\x1b[38;2;1;;3;1mx', 'font-weight:var(--ansi-bold-font-weight, 600);'],
@@ -201,7 +223,10 @@ describe('FancyAnsi', () => {
   it.each([
     ['see \x1b]8;;https://example.com\x1b\\link text\x1b]8;;\x1b\\ after', 'see link text after'],
     ['\x1b]8;id=1;https://example.com\x07l\u00efnk\x1b]8;;\x07', 'l\u00efnk'],
-    ['\x1b]8;;https://example.com\x07\x1b[1mbold\x1b[0m\x1b]8;;\x07', '<span style="font-weight:var(--ansi-bold-font-weight, 600);">bold</span>'],
+    [
+      '\x1b]8;;https://example.com\x07\x1b[1mbold\x1b[0m\x1b]8;;\x07',
+      '<span style="font-weight:var(--ansi-bold-font-weight, 600);">bold</span>',
+    ],
   ])('renders OSC 8 hyperlink text: %j', (input, expected) => {
     const fancyAnsi = new FancyAnsi();
     expect(fancyAnsi.toHtml(input)).toEqual(expected);
@@ -214,8 +239,14 @@ describe('FancyAnsi with hyperlinks', () => {
   const attrs = 'rel="noopener noreferrer nofollow"';
 
   it.each([
-    ['see \x1b]8;;https://example.com\x1b\\link text\x1b]8;;\x1b\\ after', `see <a href="https://example.com" ${attrs}>link text</a> after`],
-    ['\x1b]8;id=1;http://example.com/a?b=1&c=2\x07link\x1b]8;;\x07', `<a href="http://example.com/a?b=1&amp;c=2" ${attrs}>link</a>`],
+    [
+      'see \x1b]8;;https://example.com\x1b\\link text\x1b]8;;\x1b\\ after',
+      `see <a href="https://example.com" ${attrs}>link text</a> after`,
+    ],
+    [
+      '\x1b]8;id=1;http://example.com/a?b=1&c=2\x07link\x1b]8;;\x07',
+      `<a href="http://example.com/a?b=1&amp;c=2" ${attrs}>link</a>`,
+    ],
   ])('renders http(s) links: %j', (input, expected) => {
     expect(fancyAnsi.toHtml(input)).toEqual(expected);
   });
@@ -227,7 +258,9 @@ describe('FancyAnsi with hyperlinks', () => {
 
   it('nests a link opened inside styled text', () => {
     const output = fancyAnsi.toHtml('\x1b[1ma\x1b]8;;https://x/\x07b\x1b]8;;\x07c');
-    expect(output).toEqual(`${bold}a</span><a href="https://x/" ${attrs}>${bold}b</span></a>${bold}c</span>`);
+    expect(output).toEqual(
+      `${bold}a</span><a href="https://x/" ${attrs}>${bold}b</span></a>${bold}c</span>`,
+    );
   });
 
   it('closes a link at the end of the input', () => {
@@ -237,11 +270,15 @@ describe('FancyAnsi with hyperlinks', () => {
 
   it('closes a link when a new link opens', () => {
     const output = fancyAnsi.toHtml('\x1b]8;;https://a/\x07a\x1b]8;;https://b/\x07b');
-    expect(output).toEqual(`<a href="https://a/" ${attrs}>a</a><a href="https://b/" ${attrs}>b</a>`);
+    expect(output).toEqual(
+      `<a href="https://a/" ${attrs}>a</a><a href="https://b/" ${attrs}>b</a>`,
+    );
   });
 
   it('closes a link when an unsafe link opens', () => {
-    const output = fancyAnsi.toHtml('\x1b]8;;https://a/\x07a\x1b]8;;javascript:alert(1)\x07b\x1b]8;;\x07c');
+    const output = fancyAnsi.toHtml(
+      '\x1b]8;;https://a/\x07a\x1b]8;;javascript:alert(1)\x07b\x1b]8;;\x07c',
+    );
     expect(output).toEqual(`<a href="https://a/" ${attrs}>a</a>bc`);
   });
 
@@ -276,7 +313,9 @@ describe('FancyAnsi with hyperlinks', () => {
   it('renders link options', () => {
     const withOptions = new FancyAnsi({ hyperlinks: { target: '_blank', className: 'a b' } });
     const output = withOptions.toHtml('\x1b]8;;https://x/\x07a\x1b]8;;https://y/\x07b');
-    expect(output).toEqual(`<a href="https://x/" ${attrs} target="_blank" class="a b">a</a><a href="https://y/" ${attrs} target="_blank" class="a b">b</a>`);
+    expect(output).toEqual(
+      `<a href="https://x/" ${attrs} target="_blank" class="a b">a</a><a href="https://y/" ${attrs} target="_blank" class="a b">b</a>`,
+    );
   });
 });
 
@@ -290,7 +329,9 @@ describe('FancyAnsi with untrusted input', () => {
 
   it('escapes text inside styled spans', () => {
     const output = fancyAnsi.toHtml('\x1b[1m<script>alert(1)</script>');
-    expect(output).toEqual('<span style="font-weight:var(--ansi-bold-font-weight, 600);">&lt;script&gt;alert(1)&lt;/script&gt;</span>');
+    expect(output).toEqual(
+      '<span style="font-weight:var(--ansi-bold-font-weight, 600);">&lt;script&gt;alert(1)&lt;/script&gt;</span>',
+    );
   });
 
   it.each([
@@ -304,15 +345,12 @@ describe('FancyAnsi with untrusted input', () => {
     expect(output).not.toMatch(/<span style="[^"]*(?:script|onclick|url)/);
   });
 
-  it.each([
-    'a\x1b[1\x01<b>',
-    'a\x1b[\u00e9<b>',
-    'a\x1b]8;;x\x01<b>',
-    'a\x1b]x;<b>',
-    'a\x1b<b>',
-  ])('escapes text after malformed sequences: %j', (input) => {
-    expect(fancyAnsi.toHtml(input)).toMatch(safeHtmlRegex);
-  });
+  it.each(['a\x1b[1\x01<b>', 'a\x1b[\u00e9<b>', 'a\x1b]8;;x\x01<b>', 'a\x1b]x;<b>', 'a\x1b<b>'])(
+    'escapes text after malformed sequences: %j',
+    (input) => {
+      expect(fancyAnsi.toHtml(input)).toMatch(safeHtmlRegex);
+    },
+  );
 
   it.each([
     '\x1b]8;;javascript:alert(1)\x1b\\link\x1b]8;;\x1b\\',
@@ -325,30 +363,79 @@ describe('FancyAnsi with untrusted input', () => {
 
   it.each([
     'https://x/"onmouseover="alert(1)',
-    'https://x/\'onmouseover=\'alert(1)',
+    "https://x/'onmouseover='alert(1)",
     'https://x/?a=1&b=<script>',
     'https://x/"><script>alert(1)</script>',
   ])('escapes quotes and special characters in link urls: %j', (url) => {
     const withLinks = new FancyAnsi({ hyperlinks: true });
     const output = withLinks.toHtml(`\x1b]8;;${url}\x07link\x1b]8;;\x07`);
     expect(output).toMatch(safeHtmlRegex);
-    expect(output).toMatch(/^<a href="https:\/\/x\/[^"]*" rel="noopener noreferrer nofollow">link<\/a>$/);
+    expect(output).toMatch(
+      /^<a href="https:\/\/x\/[^"]*" rel="noopener noreferrer nofollow">link<\/a>$/,
+    );
   });
 
   it('only emits escaped text, styled spans and http(s) links for random input', () => {
     const random = prng(34);
     const pick = (items: string[]) => items[Math.floor(random() * items.length)];
-    const repeat = (fn: () => string, max: number) => Array.from({ length: Math.floor(random() * max) }, fn);
+    const repeat = (fn: () => string, max: number) =>
+      Array.from({ length: Math.floor(random() * max) }, fn);
 
-    const payloads = ['x', ' ', '<script>', '<', '>', '"', '\'', '&', '=', 'onclick=', 'javascript:', '</span>', '<span style="', '\x01', '\u00e9'];
-    const params = ['', '0', '1', '2', '3', '4', '5', '9', '24', '31', '38', '48', '58', '99', '255', '999', '"><script>', ' onclick='];
-    const urls = ['', 'https://x/', 'http://x/?a=1&b=2', 'https://x/"onclick="', 'https://x/\'><script>', 'javascript:alert(1)', 'data:text/html,<b>', 'x'];
+    const payloads = [
+      'x',
+      ' ',
+      '<script>',
+      '<',
+      '>',
+      '"',
+      "'",
+      '&',
+      '=',
+      'onclick=',
+      'javascript:',
+      '</span>',
+      '<span style="',
+      '\x01',
+      '\u00e9',
+    ];
+    const params = [
+      '',
+      '0',
+      '1',
+      '2',
+      '3',
+      '4',
+      '5',
+      '9',
+      '24',
+      '31',
+      '38',
+      '48',
+      '58',
+      '99',
+      '255',
+      '999',
+      '"><script>',
+      ' onclick=',
+    ];
+    const urls = [
+      '',
+      'https://x/',
+      'http://x/?a=1&b=2',
+      'https://x/"onclick="',
+      "https://x/'><script>",
+      'javascript:alert(1)',
+      'data:text/html,<b>',
+      'x',
+    ];
     const terminators = ['\x07', '\x1b\\', ''];
     const pieces = [
       () => pick(payloads),
       () => `\x1b[${repeat(() => pick(params), 6).join(';')}${pick(['m', 'm', 'K', ''])}`,
-      () => `\x1b[${pick(['38', '48', '58'])};${pick(['2', '5'])};${repeat(() => pick(params), 4).join(';')}m`,
-      () => `\x1b]8;;${pick(payloads)}${pick(terminators)}${pick(payloads)}\x1b]8;;${pick(terminators)}`,
+      () =>
+        `\x1b[${pick(['38', '48', '58'])};${pick(['2', '5'])};${repeat(() => pick(params), 4).join(';')}m`,
+      () =>
+        `\x1b]8;;${pick(payloads)}${pick(terminators)}${pick(payloads)}\x1b]8;;${pick(terminators)}`,
       () => `\x1b]8;;${pick(urls)}${pick(terminators)}`,
       () => pick(['\x1b', '\x1b(B', '\x1b]', '\x1b\\', '\x07']),
     ];
@@ -356,7 +443,7 @@ describe('FancyAnsi with untrusted input', () => {
     const converters = [
       fancyAnsi,
       new FancyAnsi({ hyperlinks: true }),
-      new FancyAnsi({ hyperlinks: { target: '_blank"onclick="', className: '\'><script>' } }),
+      new FancyAnsi({ hyperlinks: { target: '_blank"onclick="', className: "'><script>" } }),
     ];
     const failures: string[] = [];
     for (let i = 0; i < 5000; i += 1) {

@@ -62,7 +62,10 @@ for (let i = 0; i < 24; i += 1) {
 
 // SGR code -> style attributes modifier (code 0 is handled in applySGRCode)
 const styleAttrsMap = new Array<StyleAttrsModifierFn | undefined>(108);
-styleAttrsMap[1] = StyleAttrs.setVal(StyleAttrsKeys.FontWeight, 'var(--ansi-bold-font-weight, 600)');
+styleAttrsMap[1] = StyleAttrs.setVal(
+  StyleAttrsKeys.FontWeight,
+  'var(--ansi-bold-font-weight, 600)',
+);
 styleAttrsMap[2] = StyleAttrs.setVal(StyleAttrsKeys.Opacity, 'var(--ansi-dim-opacity, 0.7)');
 styleAttrsMap[3] = StyleAttrs.setVal(StyleAttrsKeys.FontStyle, 'italic');
 styleAttrsMap[4] = StyleAttrs.appendVal(StyleAttrsKeys.TextDecoration, 'underline');
@@ -89,7 +92,10 @@ for (let i = 0; i < 8; i += 1) {
 }
 styleAttrsMap[39] = StyleAttrs.delete(StyleAttrsKeys.Color);
 styleAttrsMap[49] = StyleAttrs.delete(StyleAttrsKeys.BackgroundColor);
-styleAttrsMap[51] = StyleAttrs.setVal(StyleAttrsKeys.Outline, 'var(--ansi-frame-outline, 1px solid)');
+styleAttrsMap[51] = StyleAttrs.setVal(
+  StyleAttrsKeys.Outline,
+  'var(--ansi-frame-outline, 1px solid)',
+);
 styleAttrsMap[53] = StyleAttrs.appendVal(StyleAttrsKeys.TextDecoration, 'overline');
 styleAttrsMap[54] = StyleAttrs.delete(StyleAttrsKeys.Outline);
 styleAttrsMap[55] = StyleAttrs.removeVal(StyleAttrsKeys.TextDecoration, 'overline');
@@ -183,10 +189,14 @@ function processExtendedColor(
  */
 function getExtendedColorKey(code: number): StyleAttrsKeys | undefined {
   switch (code) {
-    case 38: return StyleAttrsKeys.Color;
-    case 48: return StyleAttrsKeys.BackgroundColor;
-    case 58: return StyleAttrsKeys.TextDecorationColor;
-    default: return undefined;
+    case 38:
+      return StyleAttrsKeys.Color;
+    case 48:
+      return StyleAttrsKeys.BackgroundColor;
+    case 58:
+      return StyleAttrsKeys.TextDecorationColor;
+    default:
+      return undefined;
   }
 }
 
@@ -350,7 +360,8 @@ export class FancyAnsi {
           inLink = url !== '';
           break;
         }
-        default:
+        case PacketKind.ESC:
+        case PacketKind.Unknown:
           break;
       }
     }

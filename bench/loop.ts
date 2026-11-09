@@ -16,14 +16,14 @@ import { Suite } from 'benchmark';
 
 const testObj = { a: '1', b: '2', c: '3', d: '4' };
 
-(new Suite('object inner loops'))
+new Suite('object inner loops')
   .add('obj-for', () => {
     const x = { ...testObj };
     let y: any;
     for (const key in x) {
       if (x.hasOwnProperty(key)) {
         y = x[key];
-      };
+      }
     }
   })
   .add('obj-entries-foreach', () => {
@@ -38,7 +38,7 @@ const testObj = { a: '1', b: '2', c: '3', d: '4' };
     let y: any;
     for (const [, value] of Object.entries(x)) {
       y = value;
-    };
+    }
   })
   .on('cycle', function (event) {
     console.log(event.target);
@@ -46,4 +46,4 @@ const testObj = { a: '1', b: '2', c: '3', d: '4' };
   .on('complete', function () {
     console.log('Fastest is ' + this.filter('fastest').map('name'));
   })
-  .run({ 'async': true });
+  .run({ async: true });

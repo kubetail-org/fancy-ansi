@@ -24,12 +24,7 @@ export type AnsiHtmlProps = {
   style?: CSSProperties;
 };
 
-export const AnsiHtml = ({
-  className,
-  hyperlinks,
-  style,
-  text = '',
-}: AnsiHtmlProps) => (
+export const AnsiHtml = ({ className, hyperlinks, style, text = '' }: AnsiHtmlProps) => (
   // constructing FancyAnsi is cheap, so a fresh one per render tracks `hyperlinks`
   <span
     className={className}

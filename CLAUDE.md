@@ -6,7 +6,8 @@ Small TypeScript library that converts ANSI escape sequences to HTML. Ships four
 
 ## Commands
 
-- `pnpm lint` — ESLint over `src/`
+- `pnpm lint` — oxlint (`.oxlintrc.json`, type-aware) and `oxfmt --check`
+- `pnpm format` — format with oxfmt (`.oxfmtrc.json`)
 - `pnpm test run` — Vitest, single run (`pnpm test` watches)
 - `pnpm coverage` — single run with coverage; fails below 100%
 - `pnpm build` — type-check and build `dist/` with tsdown (`tsdown.config.ts`); Vite only serves the playground and tests
