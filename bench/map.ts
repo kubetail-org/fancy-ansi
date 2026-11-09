@@ -15,10 +15,15 @@
 import { Suite } from 'benchmark';
 
 const testObj = { a: '1', b: '2', c: '3', d: '4' };
-const testMap = new Map([['a', 1], ['b', 2], ['c', 3], ['d', 4]]);
+const testMap = new Map([
+  ['a', 1],
+  ['b', 2],
+  ['c', 3],
+  ['d', 4],
+]);
 
 // object benchmarks
-(new Suite('object loops'))
+new Suite('object loops')
   .add('obj-for', () => {
     const x = {};
     const y = { ...testObj };
@@ -41,7 +46,7 @@ const testMap = new Map([['a', 1], ['b', 2], ['c', 3], ['d', 4]]);
     const y = { ...testObj };
     Object.entries(y).forEach(([key, value]) => {
       x[key] = value;
-    })
+    });
   })
   .add('obj-entries-for', () => {
     const x = {};
@@ -56,10 +61,10 @@ const testMap = new Map([['a', 1], ['b', 2], ['c', 3], ['d', 4]]);
   .on('complete', function () {
     console.log('Fastest is ' + this.filter('fastest').map('name'));
   })
-  .run({ 'async': true });
+  .run({ async: true });
 
 // map benchmarks
-(new Suite('map loops'))
+new Suite('map loops')
   .add('map-for-loop', () => {
     const x = new Map();
     const y = new Map(testMap);
@@ -85,10 +90,10 @@ const testMap = new Map([['a', 1], ['b', 2], ['c', 3], ['d', 4]]);
   .on('complete', function () {
     console.log('Fastest is ' + this.filter('fastest').map('name'));
   })
-  .run({ 'async': true });
+  .run({ async: true });
 
 // comparison
-(new Suite('map vs object - merge'))
+new Suite('map vs object - merge')
   .add('merge: map', () => {
     const _1 = {};
     const _2 = { ...testObj };
@@ -113,9 +118,9 @@ const testMap = new Map([['a', 1], ['b', 2], ['c', 3], ['d', 4]]);
   .on('complete', function () {
     console.log('Fastest is ' + this.filter('fastest').map('name'));
   })
-  .run({ 'async': true });
+  .run({ async: true });
 
-(new Suite('map vs object - delete'))
+new Suite('map vs object - delete')
   .add('delete: map', () => {
     const _ = { ...testObj };
     const x = new Map(testMap);
@@ -133,9 +138,9 @@ const testMap = new Map([['a', 1], ['b', 2], ['c', 3], ['d', 4]]);
   .on('complete', function () {
     console.log('Fastest is ' + this.filter('fastest').map('name'));
   })
-  .run({ 'async': true });
+  .run({ async: true });
 
-(new Suite('map vs object - set'))
+new Suite('map vs object - set')
   .add('set: map', () => {
     const _ = {};
     const x = new Map();
@@ -152,4 +157,4 @@ const testMap = new Map([['a', 1], ['b', 2], ['c', 3], ['d', 4]]);
   .on('complete', function () {
     console.log('Fastest is ' + this.filter('fastest').map('name'));
   })
-  .run({ 'async': true });
+  .run({ async: true });

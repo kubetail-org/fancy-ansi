@@ -176,14 +176,13 @@ describe('StyleAttrs', () => {
         expect(attrs.get(StyleAttrsKeys.Color)).toEqual('red');
         expect(attrs.get(StyleAttrsKeys.BackgroundColor)).toEqual('green');
         expect(attrs.size).toEqual(2);
-        
+
         const fn = StyleAttrs.delete(StyleAttrsKeys.Color, StyleAttrsKeys.BackgroundColor);
         fn(attrs);
         expect(attrs.get(StyleAttrsKeys.Color)).toEqual(undefined);
         expect(attrs.get(StyleAttrsKeys.BackgroundColor)).toEqual(undefined);
         expect(attrs.size).toEqual(0);
       });
-
     });
 
     describe('.appendVal()', () => {

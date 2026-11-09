@@ -1,0 +1,15 @@
+{
+  // Format on save. The oxc extension resolves oxfmt from node_modules, so the editor formats
+  // with the version the lockfile pins and `pnpm lint` checks against.
+  "editor.formatOnSave": true,
+  // oxfmt formats whole files; the default mode can ask for modified lines only, which it
+  // cannot answer.
+  "editor.formatOnSaveMode": "file",
+  // oxfmt is the formatter `pnpm lint` checks.
+  "[typescript]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+  "[typescriptreact]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+  "[css]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+  // The formatter options live in .oxfmtrc.json. The Prettier extension would format at its
+  // defaults (80 columns, double quotes) and churn every file it touched.
+  "prettier.enable": false
+}

@@ -68,14 +68,15 @@ const oscRegex = rgx`
 // set `lastIndex` right before each `exec()`. ansi_up anchors only the legal
 // alternative, but anchoring both doesn't change matches: if the illegal one
 // fails at the start, it can't match further ahead either.
-const csiRegex = /(?:\x1b\[([\x3c-\x3f]?)([\d;]*)([\x20-\x2f]?[\x40-\x7e]))|(?:\x1b\[[\x20-\x7e]*([^\x20-\x39\x3b-\x7e]))/y;
-const oscRegex = /(?:\x1b\]8;[\x20-\x3a\x3c-\x7e]*;([\x21-\x7e]{0,512})(?:\x1b\\|\x07))|(?:\x1b\]8;[^\x00-\x1f]*(\x1b\\?|[\x00-\x1a\x1c-\x1f]))/y;
+const csiRegex =
+  /(?:\x1b\[([\x3c-\x3f]?)([\d;]*)([\x20-\x2f]?[\x40-\x7e]))|(?:\x1b\[[\x20-\x7e]*([^\x20-\x39\x3b-\x7e]))/y;
+const oscRegex =
+  /(?:\x1b\]8;[\x20-\x3a\x3c-\x7e]*;([\x21-\x7e]{0,512})(?:\x1b\\|\x07))|(?:\x1b\]8;[^\x00-\x1f]*(\x1b\\?|[\x00-\x1a\x1c-\x1f]))/y;
 
 /**
  * Represents the different kinds of packets that can be parsed
  */
 export const enum PacketKind {
-  UNSET,
   Text,
   ESC, // A single ESC char - random
   Unknown, // A valid CSI but not an SGR code
@@ -117,7 +118,7 @@ export class Parser implements IterableIterator<Packet> {
     // close iterator
     if (len === 0) return { value: null, done: true };
 
-    const pkt = { kind: PacketKind.UNSET, text: '', url: '' };
+    const pkt = { kind: PacketKind.Text, text: '', url: '' };
     const pos = input.indexOf('\x1b', start);
 
     // most common case, no ESC codes
@@ -140,7 +141,7 @@ export class Parser implements IterableIterator<Packet> {
     const nextChar = input.charAt(start + 1);
 
     // single ESC, or a character set sequence cut short by the end of input
-    if ((nextChar !== '[') && (nextChar !== ']') && (nextChar !== '(' || len < 3)) {
+    if (nextChar !== '[' && nextChar !== ']' && (nextChar !== '(' || len < 3)) {
       pkt.kind = PacketKind.ESC;
       pkt.text = '\x1b';
       this.lastIndex += 1;

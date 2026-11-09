@@ -1,0 +1,9 @@
+{
+  "ignorePatterns": ["src/plugin.css", "src/__snapshots__/**", "src/ansi-regex.ts", "examples/**"],
+  "singleQuote": true,
+  "printWidth": 100,
+  "sortImports": {
+    "groups": ["builtin", "external", "internal", ["parent", "sibling", "index"]],
+    "partitionByComment": true
+  }
+}

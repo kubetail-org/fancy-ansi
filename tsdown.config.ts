@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 import { copyFileSync } from 'fs';
+
 import { defineConfig } from 'tsdown';
 
 export default defineConfig({

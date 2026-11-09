@@ -165,7 +165,7 @@ export class StyleAttrs {
    */
   static appendVal(key: StyleAttrsKeys, value: string): StyleAttrsModifierFn {
     const next = memoize((currVal) => {
-      const vals = (currVal) ? currVal.split(' ') : [];
+      const vals = currVal ? currVal.split(' ') : [];
       if (!vals.includes(value)) vals.push(value);
       return vals.join(' ');
     });
@@ -181,9 +181,14 @@ export class StyleAttrs {
    * @returns {StyleAttrsModifierFn} Modifier function
    */
   static removeVal(key: StyleAttrsKeys, value: string): StyleAttrsModifierFn {
-    const next = memoize((currVal) => (
-      (currVal) ? currVal.split(' ').filter((x) => x !== value).join(' ') : ''
-    ));
+    const next = memoize((currVal) =>
+      currVal
+        ? currVal
+            .split(' ')
+            .filter((x) => x !== value)
+            .join(' ')
+        : '',
+    );
     return (attrs) => {
       const newVal = next(attrs.get(key));
       if (newVal) attrs.set(key, newVal);
